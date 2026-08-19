@@ -1,0 +1,529 @@
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>if "Windows_NT" == "Windows_NT" setlocal
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>set DIRNAME=C:\Users\mahmoud\Desktop\expenseTrakerApp\android\ 
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>if "C:\Users\mahmoud\Desktop\expenseTrakerApp\android\" == "" set DIRNAME=. 
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>set APP_BASE_NAME=gradlew 
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>set APP_HOME=C:\Users\mahmoud\Desktop\expenseTrakerApp\android\ 
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>for %i in ("C:\Users\mahmoud\Desktop\expenseTrakerApp\android\") do set APP_HOME=%~fi 
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>set APP_HOME=C:\Users\mahmoud\Desktop\expenseTrakerApp\android\ 
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m" 
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>if defined JAVA_HOME goto findJavaFromJavaHome 
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>set JAVA_HOME=C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\ 
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>set JAVA_EXE=C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\/bin/java.exe 
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>if exist "C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\/bin/java.exe" goto execute 
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>"C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\/bin/java.exe" "-Xmx64m" "-Xms64m"   "-Dorg.gradle.appname=gradlew" -jar "C:\Users\mahmoud\Desktop\expenseTrakerApp\android\\gradle\wrapper\gradle-wrapper.jar" --no-daemon --console=plain assembleRelease 
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.4.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:shared:compileJava NO-SOURCE
+> Task :gradle-plugin:shared:processResources NO-SOURCE
+> Task :gradle-plugin:shared:classes UP-TO-DATE
+> Task :gradle-plugin:shared:jar UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:settings-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:jar UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:react-native-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:jar UP-TO-DATE
+
+> Configure project :
+********************************************************************************
+
+WARNING: Setting `newArchEnabled=false` in your `gradle.properties` file is not
+supported anymore since React Native 0.82.
+
+You can remove the line from your `gradle.properties` file.
+
+The application will run with the New Architecture enabled by default.
+
+********************************************************************************
+
+
+> Configure project :app
+WARNING: The option setting 'android.builtInKotlin=false' is deprecated.
+The current default is 'true'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+WARNING: The option setting 'android.newDsl=false' is deprecated.
+The current default is 'true'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+WARNING: API 'applicationVariants' is obsolete and has been replaced with 'AndroidComponentsExtension'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+The legacy variant API is disabled by default in AGP 9.0, but can be re-enabled by adding 
+    android.newDsl=false
+to this project's gradle.properties file.
+For more information, see http://developer.android.com/build/r/new-dsl.
+
+To determine what is calling applicationVariants, use -Pandroid.debug.obsoleteApi=true on the command line to display more information.
+WARNING: API 'testVariants' is obsolete and has been replaced with 'AndroidComponentsExtension'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+The legacy variant API is disabled by default in AGP 9.0, but can be re-enabled by adding 
+    android.newDsl=false
+to this project's gradle.properties file.
+For more information, see http://developer.android.com/build/r/new-dsl.
+
+To determine what is calling testVariants, use -Pandroid.debug.obsoleteApi=true on the command line to display more information.
+WARNING: API 'unitTestVariants' is obsolete and has been replaced with 'AndroidComponentsExtension'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+The legacy variant API is disabled by default in AGP 9.0, but can be re-enabled by adding 
+    android.newDsl=false
+to this project's gradle.properties file.
+For more information, see http://developer.android.com/build/r/new-dsl.
+
+To determine what is calling unitTestVariants, use -Pandroid.debug.obsoleteApi=true on the command line to display more information.
+
+> Configure project :react-native-firebase_app
+:react-native-firebase_app package.json found at C:\Users\mahmoud\Desktop\expenseTrakerApp\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_app:firebase.bom using default value: 34.10.0
+:react-native-firebase_app:play.play-services-auth using default value: 21.5.0
+:react-native-firebase_app package.json found at C:\Users\mahmoud\Desktop\expenseTrakerApp\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_app:version set from package.json: 23.8.8 (23,8,8 - 23008008)
+:react-native-firebase_app:android.compileSdk using custom value: 36
+:react-native-firebase_app:android.targetSdk using custom value: 36
+:react-native-firebase_app:android.minSdk using custom value: 24
+:react-native-firebase_app:reactNativeAndroidDir C:\Users\mahmoud\Desktop\expenseTrakerApp\node_modules\react-native
+
+> Configure project :react-native-firebase_messaging
+:react-native-firebase_messaging package.json found at C:\Users\mahmoud\Desktop\expenseTrakerApp\node_modules\@react-native-firebase\messaging\package.json
+:react-native-firebase_app package.json found at C:\Users\mahmoud\Desktop\expenseTrakerApp\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_messaging:firebase.bom using default value: 34.10.0
+:react-native-firebase_messaging package.json found at C:\Users\mahmoud\Desktop\expenseTrakerApp\node_modules\@react-native-firebase\messaging\package.json
+:react-native-firebase_messaging:version set from package.json: 23.8.8 (23,8,8 - 23008008)
+:react-native-firebase_messaging:android.compileSdk using custom value: 36
+:react-native-firebase_messaging:android.targetSdk using custom value: 36
+:react-native-firebase_messaging:android.minSdk using custom value: 24
+:react-native-firebase_messaging:reactNativeAndroidDir C:\Users\mahmoud\Desktop\expenseTrakerApp\node_modules\react-native
+
+> Configure project :react-native-keychain
+WARNING: API 'libraryVariants' is obsolete and has been replaced with 'AndroidComponentsExtension'.
+It will be removed in version 10.0 of the Android Gradle plugin.
+The legacy variant API is disabled by default in AGP 9.0, but can be re-enabled by adding 
+    android.newDsl=false
+to this project's gradle.properties file.
+For more information, see http://developer.android.com/build/r/new-dsl.
+
+To determine what is calling libraryVariants, use -Pandroid.debug.obsoleteApi=true on the command line to display more information.
+
+> Task :app:generateAutolinkingNewArchitectureFiles UP-TO-DATE
+> Task :app:generateAutolinkingPackageList UP-TO-DATE
+> Task :app:generateCodegenSchemaFromJavaScript SKIPPED
+> Task :app:generateCodegenArtifactsFromSchema SKIPPED
+> Task :app:generateReactNativeEntryPoint UP-TO-DATE
+> Task :react-native-firebase_app:preBuild UP-TO-DATE
+> Task :react-native-firebase_messaging:preBuild UP-TO-DATE
+> Task :react-native-keychain:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-keychain:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-keychain:preBuild UP-TO-DATE
+> Task :react-native-safe-area-context:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-safe-area-context:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-safe-area-context:preBuild UP-TO-DATE
+> Task :react-native-screens:generateCodegenSchemaFromJavaScript UP-TO-DATE
+> Task :react-native-screens:generateCodegenArtifactsFromSchema UP-TO-DATE
+> Task :react-native-screens:preBuild UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:configureCMakeRelWithDebInfo[arm64-v8a]
+> Task :app:buildCMakeRelWithDebInfo[arm64-v8a]
+> Task :app:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-firebase_app:preReleaseBuild UP-TO-DATE
+> Task :react-native-firebase_app:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-firebase_app:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-firebase_app:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-firebase_messaging:preReleaseBuild UP-TO-DATE
+> Task :react-native-firebase_messaging:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-firebase_messaging:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-firebase_messaging:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-keychain:preReleaseBuild UP-TO-DATE
+> Task :react-native-keychain:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-keychain:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-keychain:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-safe-area-context:preReleaseBuild UP-TO-DATE
+> Task :react-native-safe-area-context:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-safe-area-context:mergeReleaseNativeLibs NO-SOURCE
+> Task :react-native-safe-area-context:copyReleaseJniLibsProjectOnly UP-TO-DATE
+> Task :react-native-screens:preReleaseBuild UP-TO-DATE
+> Task :react-native-screens:configureCMakeRelWithDebInfo[arm64-v8a]
+
+> Task :react-native-screens:buildCMakeRelWithDebInfo[arm64-v8a]
+C/C++: ninja: warning: premature end of file; recovering
+
+> Task :react-native-screens:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :react-native-keychain:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-keychain:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-keychain:generateReleaseResources UP-TO-DATE
+> Task :react-native-keychain:packageReleaseResources UP-TO-DATE
+> Task :react-native-keychain:processReleaseNavigationResources UP-TO-DATE
+> Task :react-native-keychain:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-screens:mergeReleaseNativeLibs
+> Task :react-native-keychain:generateReleaseRFile UP-TO-DATE
+> Task :react-native-screens:copyReleaseJniLibsProjectOnly
+> Task :react-native-keychain:compileReleaseKotlin UP-TO-DATE
+> Task :react-native-keychain:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-keychain:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-keychain:bundleLibRuntimeToDirRelease UP-TO-DATE
+> Task :react-native-safe-area-context:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-safe-area-context:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseResources UP-TO-DATE
+> Task :react-native-safe-area-context:packageReleaseResources UP-TO-DATE
+> Task :react-native-safe-area-context:processReleaseNavigationResources UP-TO-DATE
+> Task :react-native-safe-area-context:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseRFile UP-TO-DATE
+> Task :react-native-safe-area-context:compileReleaseKotlin UP-TO-DATE
+> Task :react-native-safe-area-context:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-safe-area-context:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-safe-area-context:bundleLibRuntimeToDirRelease UP-TO-DATE
+> Task :react-native-screens:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :react-native-screens:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-screens:generateReleaseResources UP-TO-DATE
+> Task :react-native-screens:packageReleaseResources UP-TO-DATE
+> Task :react-native-screens:processReleaseNavigationResources UP-TO-DATE
+> Task :react-native-screens:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-screens:generateReleaseRFile UP-TO-DATE
+> Task :react-native-screens:compileReleaseKotlin UP-TO-DATE
+> Task :react-native-screens:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-screens:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :app:mergeReleaseNativeLibs
+> Task :react-native-screens:bundleLibRuntimeToDirRelease UP-TO-DATE
+> Task :react-native-firebase_app:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-firebase_app:generateReleaseResources UP-TO-DATE
+> Task :react-native-firebase_app:packageReleaseResources UP-TO-DATE
+> Task :react-native-firebase_app:processReleaseNavigationResources UP-TO-DATE
+> Task :react-native-firebase_app:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-firebase_app:generateReleaseRFile UP-TO-DATE
+> Task :react-native-firebase_app:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-firebase_app:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-firebase_app:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-firebase_messaging:generateReleaseBuildConfig UP-TO-DATE
+> Task :react-native-firebase_messaging:generateReleaseResources UP-TO-DATE
+> Task :react-native-firebase_messaging:packageReleaseResources UP-TO-DATE
+> Task :react-native-firebase_messaging:processReleaseNavigationResources UP-TO-DATE
+> Task :react-native-firebase_messaging:parseReleaseLocalResources UP-TO-DATE
+> Task :react-native-firebase_messaging:generateReleaseRFile UP-TO-DATE
+> Task :react-native-firebase_messaging:javaPreCompileRelease UP-TO-DATE
+> Task :app:stripReleaseDebugSymbols
+> Task :react-native-firebase_messaging:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :react-native-firebase_messaging:bundleLibRuntimeToDirRelease UP-TO-DATE
+> Task :react-native-firebase_app:bundleLibRuntimeToDirRelease UP-TO-DATE
+> Task :app:checkReleaseDuplicateClasses UP-TO-DATE
+> Task :app:buildKotlinToolingMetadata UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateReleaseBuildConfig UP-TO-DATE
+> Task :app:extractReleaseNativeSymbolTables
+
+> Task :app:createBundleReleaseJsAndAssets
+
+                        ▒▒▓▓▓▓▒▒
+                     ▒▓▓▓▒▒░░▒▒▓▓▓▒
+                  ▒▓▓▓▓░░░▒▒▒▒░░░▓▓▓▓▒
+                 ▓▓▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓
+                 ▓▓░░░░░▒▓▓▓▓▓▓▒░░░░░▓▓
+                 ▓▓░░▓▓▒░░░▒▒░░░▒▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▒▒▒▒▓▓▓▓▒░░▓▓
+                 ▓▓░░▓▓▓▓▓▓▓▓▓▓▓▓▓▒░░▓▓
+                 ▓▓▒░░▒▒▓▓▓▓▓▓▓▓▒░░░▒▓▓
+                  ▒▓▓▓▒░░░▒▓▓▒░░░▒▓▓▓▒
+                     ▒▓▓▓▒░░░░▒▓▓▓▒
+                        ▒▒▓▓▓▓▒▒
+
+
+ WARN  the transform cache was reset.
+                Welcome to Metro v0.87.0
+              Fast - Scalable - Integrated
+
+
+ WARN  Attempted to import the module "C:\Users\mahmoud\Desktop\expenseTrakerApp\node_modules\react-native\src\private\featureflags\ReactNativeFeatureFlags" which is not listed in the "exports" of "C:\Users\mahmoud\Desktop\expenseTrakerApp\node_modules\react-native" under the requested subpath "./src/private/featureflags/ReactNativeFeatureFlags". Falling back to file-based resolution. Consider updating the call site or asking the package maintainer(s) to expose this API.
+LOG:Writing bundle output to: android\app\build\generated\assets\react\release\index.android.bundle
+LOG:Writing sourcemap output to: android\app\build\intermediates\sourcemaps\react\release\index.android.bundle.packager.map
+LOG:Done writing bundle output
+LOG:Done writing sourcemap output
+Copying 19 asset files
+Done copying assets
+
+> Task :app:generateReleaseResValues UP-TO-DATE
+> Task :app:generateReleaseResources
+> Task :app:processReleaseGoogleServices UP-TO-DATE
+> Task :app:packageReleaseResources
+> Task :app:processReleaseNavigationResources
+> Task :react-native-firebase_messaging:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-keychain:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-safe-area-context:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :react-native-screens:bundleLibCompileToJarRelease UP-TO-DATE
+> Task :app:javaPreCompileRelease UP-TO-DATE
+> Task :react-native-firebase_app:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-firebase_messaging:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-keychain:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-safe-area-context:writeReleaseAarMetadata UP-TO-DATE
+> Task :react-native-screens:writeReleaseAarMetadata UP-TO-DATE
+> Task :app:parseReleaseLocalResources
+> Task :app:checkReleaseAarMetadata UP-TO-DATE
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:compileReleaseNavigationResources UP-TO-DATE
+> Task :app:generateReleaseRFile
+> Task :app:mergeReleaseNativeDebugMetadata
+
+> Task :app:compileReleaseKotlin
+w: file:///C:/Users/mahmoud/Desktop/expenseTrakerApp/android/app/src/main/java/com/expensetrackerapp/WidgetPackage.kt:9:16 This declaration overrides a deprecated member but is not marked as deprecated itself. Add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///C:/Users/mahmoud/Desktop/expenseTrakerApp/android/app/src/main/java/com/expensetrackerapp/WidgetPackage.kt:9:36 The corresponding parameter in the supertype 'ReactPackage' is named 'reactContext'. This may cause problems when calling this function with named arguments.
+w: file:///C:/Users/mahmoud/Desktop/expenseTrakerApp/android/app/src/main/java/com/expensetrackerapp/WidgetPackage.kt:10:35 The corresponding parameter in the supertype 'ReactPackage' is named 'reactContext'. This may cause problems when calling this function with named arguments.
+
+> Task :app:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-firebase_app:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-firebase_app:processReleaseManifest UP-TO-DATE
+> Task :react-native-firebase_messaging:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-firebase_messaging:processReleaseManifest UP-TO-DATE
+> Task :react-native-keychain:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-keychain:processReleaseManifest UP-TO-DATE
+> Task :react-native-safe-area-context:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-safe-area-context:processReleaseManifest UP-TO-DATE
+> Task :react-native-screens:extractDeepLinksRelease UP-TO-DATE
+> Task :react-native-screens:processReleaseManifest UP-TO-DATE
+> Task :app:mergeReleaseResources
+> Task :app:processReleaseMainManifest
+> Task :app:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :app:processReleaseManifest
+> Task :react-native-firebase_app:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :react-native-firebase_app:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-firebase_messaging:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :react-native-firebase_messaging:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-keychain:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :react-native-keychain:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-safe-area-context:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :react-native-safe-area-context:compileReleaseLibraryResources UP-TO-DATE
+> Task :react-native-screens:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :react-native-screens:compileReleaseLibraryResources UP-TO-DATE
+> Task :app:desugarReleaseFileDependencies UP-TO-DATE
+> Task :app:mergeReleaseStartupProfile UP-TO-DATE
+
+> Task :app:mergeExtDexRelease
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbd, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbo, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.signin.zbb, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 7: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbv, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 7: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbv, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 7: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbi, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 7: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbi, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbp, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbs, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 10: invokespecial Lcom/google/android/gms/common/api/Api$AbstractClientBuilder;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.zba, but was com.google.android.gms.common.api.Api$AbstractClientBuilder.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbl, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbn, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbu, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbq, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 6: invokespecial Lcom/google/android/gms/common/api/Api$AbstractClientBuilder;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.internal.auth-api.zbae, but was com.google.android.gms.common.api.Api$AbstractClientBuilder.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbh, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbg, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbm, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbk, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 17: invokespecial Lcom/google/android/gms/auth/api/signin/internal/zbl;<init>(Lcom/google/android/gms/common/api/GoogleApiClient;)V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.signin.internal.zbi, but was com.google.android.gms.auth.api.signin.internal.zbl.<init>(com.google.android.gms.common.api.GoogleApiClient).
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 20: invokespecial Lcom/google/android/gms/auth/api/signin/internal/zbl;<init>(Lcom/google/android/gms/common/api/GoogleApiClient;)V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.signin.internal.zbk, but was com.google.android.gms.auth.api.signin.internal.zbl.<init>(com.google.android.gms.common.api.GoogleApiClient).
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbw, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbc, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbe, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbj, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbr, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.internal.auth-api.zbay, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 6: invokespecial Lcom/google/android/gms/common/api/Api$AbstractClientBuilder;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.internal.auth-api.zbak, but was com.google.android.gms.common.api.Api$AbstractClientBuilder.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbt, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.signin.internal.zbu, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 2: invokespecial Ljava/lang/Object;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.auth.api.identity.zbb, but was java.lang.Object.<init>().
+WARNING: C:\Users\mahmoud\.gradle\caches\9.4.1\transforms\00b96e02580975733645563210bf16ce\transformed\play-services-auth-21.5.0-runtime.jar: D8: Invalid stack map table at instruction index 6: invokespecial Lcom/google/android/gms/common/api/Api$AbstractClientBuilder;<init>()V, error: Constructor mismatch, expected constructor from com.google.android.gms.internal.auth-api.zbw, but was com.google.android.gms.common.api.Api$AbstractClientBuilder.<init>().
+
+> Task :app:processReleaseManifestForPackage
+> Task :app:mergeExtDexRelease UP-TO-DATE
+> Task :react-native-firebase_app:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-firebase_messaging:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-keychain:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-safe-area-context:prepareReleaseArtProfile UP-TO-DATE
+> Task :react-native-screens:prepareReleaseArtProfile UP-TO-DATE
+> Task :app:mergeReleaseArtProfile UP-TO-DATE
+> Task :react-native-keychain:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-safe-area-context:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-screens:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-firebase_messaging:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :react-native-firebase_app:bundleLibRuntimeToJarRelease UP-TO-DATE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :react-native-firebase_app:generateReleaseAssets UP-TO-DATE
+> Task :react-native-firebase_app:mergeReleaseAssets UP-TO-DATE
+> Task :react-native-firebase_messaging:generateReleaseAssets UP-TO-DATE
+> Task :react-native-firebase_messaging:mergeReleaseAssets UP-TO-DATE
+> Task :react-native-keychain:generateReleaseAssets UP-TO-DATE
+> Task :react-native-keychain:mergeReleaseAssets UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseAssets UP-TO-DATE
+> Task :react-native-safe-area-context:mergeReleaseAssets UP-TO-DATE
+> Task :react-native-screens:generateReleaseAssets UP-TO-DATE
+> Task :react-native-screens:mergeReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets
+> Task :app:extractReleaseVersionControlInfo UP-TO-DATE
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :react-native-firebase_app:processReleaseJavaRes NO-SOURCE
+> Task :react-native-firebase_app:createFullJarRelease UP-TO-DATE
+> Task :app:compressReleaseAssets
+> Task :react-native-firebase_app:extractProguardFiles UP-TO-DATE
+> Task :app:processReleaseResources
+> Task :react-native-firebase_app:generateReleaseLintModel UP-TO-DATE
+> Task :app:dexBuilderRelease
+> Task :app:mergeReleaseGlobalSynthetics UP-TO-DATE
+> Task :react-native-firebase_app:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-firebase_messaging:processReleaseJavaRes NO-SOURCE
+> Task :react-native-firebase_messaging:createFullJarRelease UP-TO-DATE
+> Task :react-native-firebase_messaging:extractProguardFiles UP-TO-DATE
+> Task :react-native-firebase_messaging:generateReleaseLintModel UP-TO-DATE
+> Task :react-native-firebase_messaging:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-keychain:processReleaseJavaRes UP-TO-DATE
+> Task :react-native-keychain:createFullJarRelease UP-TO-DATE
+> Task :react-native-keychain:extractProguardFiles UP-TO-DATE
+> Task :react-native-keychain:generateReleaseLintModel UP-TO-DATE
+> Task :react-native-keychain:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-safe-area-context:processReleaseJavaRes UP-TO-DATE
+> Task :react-native-safe-area-context:createFullJarRelease UP-TO-DATE
+> Task :react-native-safe-area-context:extractProguardFiles UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseLintModel UP-TO-DATE
+> Task :react-native-safe-area-context:prepareLintJarForPublish UP-TO-DATE
+> Task :react-native-screens:processReleaseJavaRes UP-TO-DATE
+> Task :react-native-screens:createFullJarRelease UP-TO-DATE
+> Task :react-native-screens:extractProguardFiles UP-TO-DATE
+> Task :react-native-screens:generateReleaseLintModel UP-TO-DATE
+> Task :react-native-screens:prepareLintJarForPublish UP-TO-DATE
+> Task :app:generateReleaseLintVitalReportModel
+> Task :react-native-keychain:checkReleaseAarMetadata UP-TO-DATE
+> Task :react-native-keychain:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-keychain:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-keychain:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :app:mergeDexRelease
+> Task :react-native-keychain:extractReleaseAnnotations
+> Task :react-native-keychain:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-keychain:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-keychain:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-safe-area-context:checkReleaseAarMetadata UP-TO-DATE
+> Task :react-native-safe-area-context:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-safe-area-context:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-safe-area-context:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-safe-area-context:extractReleaseAnnotations
+> Task :react-native-safe-area-context:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-safe-area-context:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-safe-area-context:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-safe-area-context:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-safe-area-context:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-screens:checkReleaseAarMetadata UP-TO-DATE
+> Task :react-native-screens:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-screens:stripReleaseDebugSymbols
+> Task :react-native-screens:extractReleaseAnnotations
+> Task :react-native-screens:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-screens:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-screens:copyReleaseJniLibsProjectAndLocalJars
+> Task :react-native-screens:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-screens:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-screens:bundleReleaseLocalLintAar
+> Task :react-native-firebase_messaging:checkReleaseAarMetadata UP-TO-DATE
+> Task :react-native-firebase_messaging:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-firebase_messaging:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-firebase_messaging:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-firebase_messaging:extractReleaseAnnotations
+> Task :react-native-firebase_messaging:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-firebase_messaging:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-firebase_messaging:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-firebase_messaging:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-firebase_messaging:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :app:compileReleaseArtProfile
+> Task :react-native-firebase_app:checkReleaseAarMetadata UP-TO-DATE
+> Task :react-native-firebase_app:stripReleaseDebugSymbols NO-SOURCE
+> Task :react-native-firebase_app:copyReleaseJniLibsProjectAndLocalJars UP-TO-DATE
+> Task :react-native-firebase_app:extractDeepLinksForAarRelease UP-TO-DATE
+> Task :react-native-firebase_app:extractReleaseAnnotations
+> Task :react-native-firebase_app:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :react-native-firebase_app:mergeReleaseConsumerProguardFiles UP-TO-DATE
+> Task :react-native-firebase_app:mergeReleaseJavaResource UP-TO-DATE
+> Task :react-native-firebase_app:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-firebase_app:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-firebase_app:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-firebase_messaging:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-keychain:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-safe-area-context:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-screens:writeReleaseLintModelMetadata UP-TO-DATE
+> Task :react-native-firebase_app:generateReleaseLintVitalModel UP-TO-DATE
+> Task :react-native-firebase_messaging:generateReleaseLintVitalModel UP-TO-DATE
+> Task :react-native-keychain:generateReleaseLintVitalModel UP-TO-DATE
+> Task :react-native-safe-area-context:generateReleaseLintVitalModel UP-TO-DATE
+> Task :react-native-screens:generateReleaseLintVitalModel UP-TO-DATE
+> Task :app:processReleaseJavaRes UP-TO-DATE
+> Task :app:mergeReleaseJavaResource UP-TO-DATE
+> Task :app:collectReleaseDependencies UP-TO-DATE
+> Task :app:sdkReleaseDependencyData UP-TO-DATE
+> Task :app:validateSigningRelease UP-TO-DATE
+> Task :app:writeReleaseAppMetadata UP-TO-DATE
+> Task :app:writeReleaseSigningConfigVersions UP-TO-DATE
+> Task :react-native-firebase_app:bundleReleaseAar UP-TO-DATE
+> Task :react-native-firebase_app:mergeReleaseResources UP-TO-DATE
+> Task :react-native-firebase_app:verifyReleaseResources UP-TO-DATE
+> Task :react-native-firebase_app:assembleRelease UP-TO-DATE
+> Task :react-native-firebase_messaging:bundleReleaseAar UP-TO-DATE
+> Task :react-native-firebase_messaging:mergeReleaseResources UP-TO-DATE
+> Task :react-native-firebase_messaging:verifyReleaseResources UP-TO-DATE
+> Task :react-native-firebase_messaging:assembleRelease UP-TO-DATE
+> Task :react-native-keychain:mergeReleaseResources UP-TO-DATE
+> Task :react-native-keychain:verifyReleaseResources UP-TO-DATE
+> Task :react-native-safe-area-context:bundleReleaseAar UP-TO-DATE
+> Task :react-native-safe-area-context:mergeReleaseResources UP-TO-DATE
+> Task :react-native-safe-area-context:verifyReleaseResources UP-TO-DATE
+> Task :react-native-safe-area-context:assembleRelease UP-TO-DATE
+> Task :react-native-screens:bundleReleaseAar
+> Task :react-native-screens:mergeReleaseResources UP-TO-DATE
+> Task :react-native-screens:verifyReleaseResources UP-TO-DATE
+> Task :react-native-screens:assembleRelease
+> Task :app:optimizeReleaseResources
+> Task :react-native-firebase_app:lintVitalAnalyzeRelease
+> Task :react-native-firebase_messaging:lintVitalAnalyzeRelease
+
+> Task :react-native-keychain:extractReleaseAnnotations
+Warning: com.oblador.keychain.KeychainModule.AccessControl: The typedef annotation should have @Retention(RetentionPolicy.SOURCE)
+Warning: com.oblador.keychain.KeychainModule.KnownCiphers: The typedef annotation should have @Retention(RetentionPolicy.SOURCE)
+
+> Task :react-native-keychain:syncReleaseLibJars UP-TO-DATE
+> Task :react-native-keychain:bundleReleaseLocalLintAar UP-TO-DATE
+> Task :react-native-keychain:bundleReleaseAar UP-TO-DATE
+> Task :react-native-keychain:assembleRelease UP-TO-DATE
+> Task :react-native-safe-area-context:lintVitalAnalyzeRelease
+> Task :react-native-keychain:lintVitalAnalyzeRelease
+> Task :react-native-screens:lintVitalAnalyzeRelease
+> Task :app:lintVitalAnalyzeRelease
+> Task :app:lintVitalReportRelease
+> Task :app:lintVitalRelease
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect UP-TO-DATE
+> Task :app:assembleRelease
+
+[Incubating] Problems report is available at: file:///C:/Users/mahmoud/Desktop/expenseTrakerApp/android/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.4.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD SUCCESSFUL in 9m 48s
+281 actionable tasks: 48 executed, 233 up-to-date
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>if 0 EQU 0 goto mainEnd 
+
+C:\Users\mahmoud\Desktop\expenseTrakerApp\android>if "Windows_NT" == "Windows_NT" endlocal

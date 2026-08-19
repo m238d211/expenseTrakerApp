@@ -38,6 +38,10 @@ local.properties
 # node.js
 #
 node_modules/
+.env
+.env.*
+!.env.example
+**/google-services.json
 npm-debug.log
 yarn-error.log
 
