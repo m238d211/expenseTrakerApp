@@ -32,6 +32,14 @@ export function HomeScreen({
       return api.monthly(token);
     },
   });
+  const profile = useQuery({
+    queryKey: ['me'],
+    queryFn: async () => {
+      const token = await readToken();
+      if (!token) throw new Error('انتهت الجلسة');
+      return api.me(token);
+    },
+  });
   const transactions = useQuery({
     queryKey: ['transactions'],
     queryFn: async () => {
@@ -112,7 +120,9 @@ export function HomeScreen({
       <View style={styles.header}>
         <View>
           <Text style={styles.eyebrow}>لوحة المتابعة</Text>
-          <Text style={styles.title}>صباح الخير 👋</Text>
+          <Text style={styles.title}>
+            مرحبا {profile.data?.name || 'بك'}👋
+          </Text>
         </View>
         <Pressable
           accessibilityRole="button"
@@ -239,13 +249,13 @@ export function HomeScreen({
 }
 const styles = StyleSheet.create({
   quickAdd: {
-    backgroundColor: colors.ink,
+    backgroundColor: colors.quickAddSurface,
     borderRadius: radius.md,
     padding: spacing.md,
     alignItems: 'center',
     marginTop: spacing.md,
   },
-  quickAddText: { ...typography.body, color: colors.white, fontWeight: '700' },
+  quickAddText: { ...typography.body, color: colors.quickAddText, fontWeight: '700' },
   screen: {
     flexGrow: 1,
     backgroundColor: colors.canvas,
@@ -307,14 +317,14 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   balance: {
-    backgroundColor: colors.ink,
+    backgroundColor: colors.balanceSurface,
     borderRadius: radius.lg,
     padding: spacing.lg,
     marginTop: spacing.xl,
   },
-  balanceLabel: { ...typography.label, color: colors.mint, textAlign: 'right' },
+  balanceLabel: { ...typography.label, color: colors.balanceText, textAlign: 'right' },
   balanceValue: {
-    color: colors.white,
+    color: colors.balanceText,
     fontSize: 32,
     fontWeight: '800',
     textAlign: 'right',
@@ -322,7 +332,7 @@ const styles = StyleSheet.create({
   },
   balanceHint: {
     ...typography.label,
-    color: '#B6C9C2',
+    color: colors.balanceMuted,
     textAlign: 'right',
     marginTop: spacing.sm,
   },

@@ -7,57 +7,47 @@ import {
   Text,
   View,
 } from 'react-native';
+import { Pencil, Trash2 } from 'lucide-react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api } from '../api/client';
+import { api, Budget, RecurringTransaction, SavingsGoal } from '../api/client';
 import { readToken } from '../auth/storage';
 import { Field } from '../components/Field';
 import { PrimaryButton } from '../components/PrimaryButton';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { colors, radius, spacing, typography } from '../design/tokens';
 
+type Mode = 'budgets' | 'goals' | 'recurring';
 export function PlanningScreen() {
-  const [mode, setMode] = useState<'budgets' | 'goals' | 'recurring'>(
-    'budgets',
-  );
+  const [mode, setMode] = useState<Mode>('budgets');
   return (
-    <ScrollView contentContainerStyle={styles.screen}>
+    <ScrollView
+      contentContainerStyle={styles.screen}
+      keyboardShouldPersistTaps="handled"
+    >
       <Text style={styles.title}>التخطيط</Text>
       <Text style={styles.subtitle}>
         حوّل دخلك إلى خطة واضحة للإنفاق والادخار.
       </Text>
       <View style={styles.switcher}>
-        <Pressable
-          onPress={() => setMode('budgets')}
-          style={[styles.switch, mode === 'budgets' && styles.activeSwitch]}
-        >
-          <Text
-            style={[styles.switchText, mode === 'budgets' && styles.activeText]}
+        {(
+          [
+            ['budgets', 'الميزانيات'],
+            ['goals', 'الأهداف'],
+            ['recurring', 'المتكررة'],
+          ] as const
+        ).map(([value, label]) => (
+          <Pressable
+            key={value}
+            onPress={() => setMode(value)}
+            style={[styles.switch, mode === value && styles.activeSwitch]}
           >
-            الميزانيات
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={() => setMode('goals')}
-          style={[styles.switch, mode === 'goals' && styles.activeSwitch]}
-        >
-          <Text
-            style={[styles.switchText, mode === 'goals' && styles.activeText]}
-          >
-            الأهداف
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={() => setMode('recurring')}
-          style={[styles.switch, mode === 'recurring' && styles.activeSwitch]}
-        >
-          <Text
-            style={[
-              styles.switchText,
-              mode === 'recurring' && styles.activeText,
-            ]}
-          >
-            المتكررة
-          </Text>
-        </Pressable>
+            <Text
+              style={[styles.switchText, mode === value && styles.activeText]}
+            >
+              {label}
+            </Text>
+          </Pressable>
+        ))}
       </View>
       {mode === 'budgets' ? (
         <Budgets />
@@ -69,8 +59,11 @@ export function PlanningScreen() {
     </ScrollView>
   );
 }
+
 function Budgets() {
   const [amount, setAmount] = useState('');
+  const [editing, setEditing] = useState<Budget | null>(null);
+  const [pending, setPending] = useState<Budget | null>(null);
   const client = useQueryClient();
   const query = useQuery({
     queryKey: ['budgets'],
@@ -84,6 +77,8 @@ function Budgets() {
     mutationFn: async () => {
       const token = await readToken();
       if (!token) throw new Error('انتهت الجلسة');
+      if (editing)
+        return api.updateBudget(token, editing.id, { amount: Number(amount) });
       const now = new Date();
       return api.createBudget(token, {
         amount: Number(amount),
@@ -95,9 +90,10 @@ function Budgets() {
         ).toISOString(),
       });
     },
-    onSuccess: async () => {
+    onSuccess: () => {
       setAmount('');
-      await client.invalidateQueries({ queryKey: ['budgets'] });
+      setEditing(null);
+      void client.invalidateQueries({ queryKey: ['budgets'] });
     },
     onError: e =>
       Alert.alert(
@@ -105,10 +101,28 @@ function Budgets() {
         e instanceof Error ? e.message : 'حاول مرة أخرى',
       ),
   });
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const token = await readToken();
+      if (!token) throw new Error('انتهت الجلسة');
+      return api.deleteBudget(token, id);
+    },
+    onSuccess: () => {
+      setPending(null);
+      void client.invalidateQueries({ queryKey: ['budgets'] });
+    },
+    onError: e =>
+      Alert.alert(
+        'تعذر حذف الميزانية',
+        e instanceof Error ? e.message : 'حاول مرة أخرى',
+      ),
+  });
   return (
     <>
       <View style={styles.form}>
-        <Text style={styles.formTitle}>ميزانية هذا الشهر</Text>
+        <Text style={styles.formTitle}>
+          {editing ? 'تعديل الميزانية' : 'ميزانية هذا الشهر'}
+        </Text>
         <Field
           label="الحد الأعلى للمصروفات"
           placeholder="مثلاً 500000"
@@ -116,33 +130,78 @@ function Budgets() {
           onChangeText={setAmount}
           keyboardType="number-pad"
         />
-        <PrimaryButton
-          title="إضافة ميزانية"
-          loading={mutation.isPending}
-          onPress={() =>
-            Number(amount) > 0
-              ? mutation.mutate()
-              : Alert.alert('بيانات ناقصة', 'أدخل مبلغ الميزانية')
-          }
-        />
+        <View style={styles.formActions}>
+          <PrimaryButton
+            title={editing ? 'حفظ التعديل' : 'إضافة ميزانية'}
+            loading={mutation.isPending}
+            onPress={() =>
+              Number(amount) > 0
+                ? mutation.mutate()
+                : Alert.alert('بيانات ناقصة', 'أدخل مبلغ الميزانية')
+            }
+          />
+          {editing && (
+            <Pressable
+              onPress={() => {
+                setEditing(null);
+                setAmount('');
+              }}
+              style={styles.cancel}
+            >
+              <Text style={styles.cancelText}>إلغاء</Text>
+            </Pressable>
+          )}
+        </View>
       </View>
       {query.data?.map(item => (
         <View key={item.id} style={styles.item}>
-          <Text style={styles.itemTitle}>
-            {item.category?.name ?? 'كل المصروفات'}
-          </Text>
+          <View style={styles.itemTop}>
+            <View style={styles.iconActions}>
+              <Pressable
+                onPress={() => {
+                  setEditing(item);
+                  setAmount(String(item.amount));
+                }}
+                accessibilityLabel="تعديل الميزانية"
+              >
+                <Pencil color={colors.emeraldDark} size={18} />
+              </Pressable>
+              <Pressable
+                onPress={() => setPending(item)}
+                accessibilityLabel="حذف الميزانية"
+              >
+                <Trash2 color={colors.danger} size={18} />
+              </Pressable>
+            </View>
+            <Text style={styles.itemTitle}>
+              {item.category?.name ?? 'كل المصروفات'}
+            </Text>
+          </View>
           <Text style={styles.itemValue}>
             {item.amount.toLocaleString('en-US')} د.ع
           </Text>
           <Text style={styles.note}>الميزانية الشهرية الحالية</Text>
         </View>
       ))}
+      <ConfirmDialog
+        visible={Boolean(pending)}
+        title="حذف الميزانية"
+        message="هل تريد حذف هذه الميزانية؟"
+        confirmLabel="حذف"
+        destructive
+        onCancel={() => setPending(null)}
+        onConfirm={() => pending && remove.mutate(pending.id)}
+      />
     </>
   );
 }
+
 function Goals() {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
+  const [currentAmount, setCurrentAmount] = useState('0');
+  const [editing, setEditing] = useState<SavingsGoal | null>(null);
+  const [pending, setPending] = useState<SavingsGoal | null>(null);
   const client = useQueryClient();
   const query = useQuery({
     queryKey: ['savings-goals'],
@@ -152,19 +211,44 @@ function Goals() {
       return api.savingsGoals(token);
     },
   });
+  const monthly = useQuery({
+    queryKey: ['monthly'],
+    queryFn: async () => {
+      const token = await readToken();
+      if (!token) throw new Error('انتهت الجلسة');
+      return api.monthly(token);
+    },
+  });
+  const recurring = useQuery({
+    queryKey: ['recurring-transactions'],
+    queryFn: async () => {
+      const token = await readToken();
+      if (!token) throw new Error('انتهت الجلسة');
+      return api.recurringTransactions(token);
+    },
+  });
   const mutation = useMutation({
     mutationFn: async () => {
       const token = await readToken();
       if (!token) throw new Error('انتهت الجلسة');
-      return api.createSavingsGoal(token, {
-        name,
-        targetAmount: Number(amount),
-      });
+      return editing
+        ? api.updateSavingsGoal(token, editing.id, {
+            name: name.trim(),
+            targetAmount: Number(amount),
+            currentAmount: Number(currentAmount),
+          })
+        : api.createSavingsGoal(token, {
+            name: name.trim(),
+            targetAmount: Number(amount),
+            currentAmount: Number(currentAmount),
+          });
     },
-    onSuccess: async () => {
+    onSuccess: () => {
       setName('');
       setAmount('');
-      await client.invalidateQueries({ queryKey: ['savings-goals'] });
+      setCurrentAmount('0');
+      setEditing(null);
+      void client.invalidateQueries({ queryKey: ['savings-goals'] });
     },
     onError: e =>
       Alert.alert(
@@ -172,13 +256,56 @@ function Goals() {
         e instanceof Error ? e.message : 'حاول مرة أخرى',
       ),
   });
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const token = await readToken();
+      if (!token) throw new Error('انتهت الجلسة');
+      return api.deleteSavingsGoal(token, id);
+    },
+    onSuccess: () => {
+      setPending(null);
+      void client.invalidateQueries({ queryKey: ['savings-goals'] });
+    },
+    onError: e =>
+      Alert.alert(
+        'تعذر حذف الهدف',
+        e instanceof Error ? e.message : 'حاول مرة أخرى',
+      ),
+  });
+  const currentBalance =
+    (monthly.data?.openingBalance ?? 0) +
+    (monthly.data?.income ?? 0) -
+    (monthly.data?.expenses ?? 0);
+  const recurringCommitment = (recurring.data ?? [])
+    .filter(item => item.isActive && item.type === 'expense')
+    .reduce((total, item) => {
+      const monthlyAmount =
+        item.frequency === 'daily'
+          ? item.amount * 30
+          : item.frequency === 'weekly'
+          ? item.amount * 4
+          : item.frequency === 'yearly'
+          ? item.amount / 12
+          : item.amount;
+      return total + monthlyAmount;
+    }, 0);
+  const budgetOverspend = (monthly.data?.budgets ?? []).reduce(
+    (total, budget) => total + Math.max(0, budget.used - budget.amount),
+    0,
+  );
+  const derivedCurrentAmount = Math.max(
+    0,
+    Math.round(currentBalance - recurringCommitment - budgetOverspend),
+  );
   return (
     <>
       <View style={styles.form}>
-        <Text style={styles.formTitle}>هدف جديد</Text>
+        <Text style={styles.formTitle}>
+          {editing ? 'تعديل الهدف' : 'هدف ادخار جديد'}
+        </Text>
         <Field
           label="اسم الهدف"
-          placeholder="مثلاً سفر"
+          placeholder="مثلاً: سفر"
           value={name}
           onChangeText={setName}
         />
@@ -189,28 +316,72 @@ function Goals() {
           onChangeText={setAmount}
           keyboardType="number-pad"
         />
-        <PrimaryButton
-          title="إضافة هدف"
-          loading={mutation.isPending}
-          onPress={() =>
-            name.trim() && Number(amount) > 0
-              ? mutation.mutate()
-              : Alert.alert('بيانات ناقصة', 'أدخل اسم الهدف والمبلغ')
-          }
+        <Field
+          label="المبلغ المدخر حاليًا"
+          placeholder="0"
+          value={currentAmount}
+          onChangeText={setCurrentAmount}
+          keyboardType="number-pad"
         />
+        <View style={styles.formActions}>
+          <PrimaryButton
+            title={editing ? 'حفظ التعديل' : 'إضافة هدف'}
+            loading={mutation.isPending}
+            onPress={() =>
+              name.trim() && Number(amount) > 0 && Number(currentAmount) >= 0
+                ? mutation.mutate()
+                : Alert.alert('بيانات ناقصة', 'أدخل اسم الهدف والمبلغ')
+            }
+          />
+          {editing && (
+            <Pressable
+              onPress={() => {
+                setEditing(null);
+                setName('');
+                setAmount('');
+                setCurrentAmount('0');
+              }}
+              style={styles.cancel}
+            >
+              <Text style={styles.cancelText}>إلغاء</Text>
+            </Pressable>
+          )}
+        </View>
       </View>
       {query.data?.map(item => {
+        const displayedCurrentAmount = derivedCurrentAmount;
         const progress = item.targetAmount
           ? Math.min(
               100,
-              Math.round((item.currentAmount / item.targetAmount) * 100),
+              Math.round((displayedCurrentAmount / item.targetAmount) * 100),
             )
           : 0;
         return (
           <View key={item.id} style={styles.item}>
-            <Text style={styles.itemTitle}>{item.name}</Text>
+            <View style={styles.itemTop}>
+              <View style={styles.iconActions}>
+                <Pressable
+                  onPress={() => {
+                    setEditing(item);
+                    setName(item.name);
+                    setAmount(String(item.targetAmount));
+                    setCurrentAmount(String(item.currentAmount));
+                  }}
+                  accessibilityLabel="تعديل الهدف"
+                >
+                  <Pencil color={colors.emeraldDark} size={18} />
+                </Pressable>
+                <Pressable
+                  onPress={() => setPending(item)}
+                  accessibilityLabel="حذف الهدف"
+                >
+                  <Trash2 color={colors.danger} size={18} />
+                </Pressable>
+              </View>
+              <Text style={styles.itemTitle}>{item.name}</Text>
+            </View>
             <Text style={styles.itemValue}>
-              {item.currentAmount.toLocaleString('en-US')} /{' '}
+              {displayedCurrentAmount.toLocaleString('en-US')} /{' '}
               {item.targetAmount.toLocaleString('en-US')} د.ع
             </Text>
             <View style={styles.track}>
@@ -220,15 +391,26 @@ function Goals() {
           </View>
         );
       })}
+      <ConfirmDialog
+        visible={Boolean(pending)}
+        title="حذف الهدف"
+        message="هل تريد حذف هدف الادخار؟"
+        confirmLabel="حذف"
+        destructive
+        onCancel={() => setPending(null)}
+        onConfirm={() => pending && remove.mutate(pending.id)}
+      />
     </>
   );
 }
+
 function Recurring() {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
-  const [frequency, setFrequency] = useState<
-    'daily' | 'weekly' | 'monthly' | 'yearly'
-  >('monthly');
+  const [frequency, setFrequency] =
+    useState<RecurringTransaction['frequency']>('monthly');
+  const [editing, setEditing] = useState<RecurringTransaction | null>(null);
+  const [pending, setPending] = useState<RecurringTransaction | null>(null);
   const client = useQueryClient();
   const query = useQuery({
     queryKey: ['recurring-transactions'],
@@ -242,18 +424,25 @@ function Recurring() {
     mutationFn: async () => {
       const token = await readToken();
       if (!token) throw new Error('انتهت الجلسة');
-      return api.createRecurringTransaction(token, {
-        amount: Number(amount),
-        description,
-        type: 'expense',
-        frequency,
-        nextRunAt: new Date().toISOString(),
-      });
+      return editing
+        ? api.updateRecurringTransaction(token, editing.id, {
+            amount: Number(amount),
+            description: description.trim(),
+            frequency,
+          })
+        : api.createRecurringTransaction(token, {
+            amount: Number(amount),
+            description: description.trim(),
+            type: 'expense',
+            frequency,
+            nextRunAt: new Date().toISOString(),
+          });
     },
-    onSuccess: async () => {
+    onSuccess: () => {
       setAmount('');
       setDescription('');
-      await client.invalidateQueries({ queryKey: ['recurring-transactions'] });
+      setEditing(null);
+      void client.invalidateQueries({ queryKey: ['recurring-transactions'] });
     },
     onError: e =>
       Alert.alert(
@@ -261,13 +450,37 @@ function Recurring() {
         e instanceof Error ? e.message : 'حاول مرة أخرى',
       ),
   });
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const token = await readToken();
+      if (!token) throw new Error('انتهت الجلسة');
+      return api.deleteRecurringTransaction(token, id);
+    },
+    onSuccess: () => {
+      setPending(null);
+      void client.invalidateQueries({ queryKey: ['recurring-transactions'] });
+    },
+    onError: e =>
+      Alert.alert(
+        'تعذر حذف العملية المتكررة',
+        e instanceof Error ? e.message : 'حاول مرة أخرى',
+      ),
+  });
+  const labels = {
+    daily: 'يومي',
+    weekly: 'أسبوعي',
+    monthly: 'شهري',
+    yearly: 'سنوي',
+  };
   return (
     <>
       <View style={styles.form}>
-        <Text style={styles.formTitle}>عملية متكررة جديدة</Text>
+        <Text style={styles.formTitle}>
+          {editing ? 'تعديل العملية المتكررة' : 'عملية متكررة جديدة'}
+        </Text>
         <Field
           label="الوصف"
-          placeholder="مثلاً إيجار"
+          placeholder="مثلاً: إيجار"
           value={description}
           onChangeText={setDescription}
         />
@@ -278,46 +491,77 @@ function Recurring() {
           onChangeText={setAmount}
           keyboardType="number-pad"
         />
-        <View style={styles.switcher}>
-          {(['daily', 'weekly', 'monthly', 'yearly'] as const).map(value => (
-            <Pressable
-              key={value}
-              onPress={() => setFrequency(value)}
-              style={[
-                styles.switch,
-                frequency === value && styles.activeSwitch,
-              ]}
-            >
-              <Text
-                style={
-                  frequency === value ? styles.activeText : styles.switchText
-                }
+        <View style={styles.frequency}>
+          {(Object.keys(labels) as RecurringTransaction['frequency'][]).map(
+            value => (
+              <Pressable
+                key={value}
+                onPress={() => setFrequency(value)}
+                style={[
+                  styles.freq,
+                  frequency === value && styles.activeSwitch,
+                ]}
               >
-                {
-                  {
-                    daily: 'يومي',
-                    weekly: 'أسبوعي',
-                    monthly: 'شهري',
-                    yearly: 'سنوي',
-                  }[value]
-                }
-              </Text>
-            </Pressable>
-          ))}
+                <Text
+                  style={[
+                    styles.switchText,
+                    frequency === value && styles.activeText,
+                  ]}
+                >
+                  {labels[value]}
+                </Text>
+              </Pressable>
+            ),
+          )}
         </View>
-        <PrimaryButton
-          title="إضافة العملية"
-          loading={mutation.isPending}
-          onPress={() =>
-            description.trim() && Number(amount) > 0
-              ? mutation.mutate()
-              : Alert.alert('بيانات ناقصة', 'أدخل الوصف والمبلغ')
-          }
-        />
+        <View style={styles.formActions}>
+          <PrimaryButton
+            title={editing ? 'حفظ التعديل' : 'إضافة العملية'}
+            loading={mutation.isPending}
+            onPress={() =>
+              description.trim() && Number(amount) > 0
+                ? mutation.mutate()
+                : Alert.alert('بيانات ناقصة', 'أدخل الوصف والمبلغ')
+            }
+          />
+          {editing && (
+            <Pressable
+              onPress={() => {
+                setEditing(null);
+                setDescription('');
+                setAmount('');
+              }}
+              style={styles.cancel}
+            >
+              <Text style={styles.cancelText}>إلغاء</Text>
+            </Pressable>
+          )}
+        </View>
       </View>
       {query.data?.map(item => (
         <View key={item.id} style={styles.item}>
-          <Text style={styles.itemTitle}>{item.description}</Text>
+          <View style={styles.itemTop}>
+            <View style={styles.iconActions}>
+              <Pressable
+                onPress={() => {
+                  setEditing(item);
+                  setDescription(item.description);
+                  setAmount(String(item.amount));
+                  setFrequency(item.frequency);
+                }}
+                accessibilityLabel="تعديل العملية المتكررة"
+              >
+                <Pencil color={colors.emeraldDark} size={18} />
+              </Pressable>
+              <Pressable
+                onPress={() => setPending(item)}
+                accessibilityLabel="حذف العملية المتكررة"
+              >
+                <Trash2 color={colors.danger} size={18} />
+              </Pressable>
+            </View>
+            <Text style={styles.itemTitle}>{item.description}</Text>
+          </View>
           <Text style={styles.itemValue}>
             {item.amount.toLocaleString('en-US')} د.ع •{' '}
             {item.isActive ? 'فعالة' : 'متوقفة'}
@@ -328,9 +572,19 @@ function Recurring() {
           </Text>
         </View>
       ))}
+      <ConfirmDialog
+        visible={Boolean(pending)}
+        title="حذف العملية المتكررة"
+        message="هل تريد حذف هذه العملية؟"
+        confirmLabel="حذف"
+        destructive
+        onCancel={() => setPending(null)}
+        onConfirm={() => pending && remove.mutate(pending.id)}
+      />
     </>
   );
 }
+
 const styles = StyleSheet.create({
   screen: {
     flexGrow: 1,
@@ -367,7 +621,7 @@ const styles = StyleSheet.create({
   },
   activeSwitch: { backgroundColor: colors.ink },
   switchText: { ...typography.label, color: colors.inkMuted },
-  activeText: { color: colors.white },
+  activeText: { color: colors.primaryText },
   form: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
@@ -378,6 +632,14 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   formTitle: { ...typography.heading, color: colors.ink, textAlign: 'right' },
+  formActions: { gap: spacing.sm },
+  cancel: {
+    alignItems: 'center',
+    padding: spacing.sm,
+    backgroundColor: colors.canvas,
+    borderRadius: radius.sm,
+  },
+  cancelText: { ...typography.label, color: colors.inkMuted },
   item: {
     backgroundColor: colors.surface,
     borderRadius: radius.md,
@@ -385,6 +647,11 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  itemTop: {
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   itemTitle: { ...typography.heading, color: colors.ink, textAlign: 'right' },
   itemValue: {
@@ -400,6 +667,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     marginTop: spacing.xs,
   },
+  iconActions: { flexDirection: 'row-reverse', gap: spacing.md },
   track: {
     height: 8,
     backgroundColor: colors.mint,
@@ -411,5 +679,16 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: colors.emerald,
     borderRadius: radius.pill,
+  },
+  frequency: {
+    flexDirection: 'row-reverse',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  freq: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.pill,
+    backgroundColor: colors.canvas,
   },
 });

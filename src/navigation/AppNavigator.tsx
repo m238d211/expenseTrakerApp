@@ -1,8 +1,15 @@
 import React from 'react';
-import { Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import {
+  CalendarCheck2,
+  ChartPie,
+  House,
+  ReceiptText,
+  Settings,
+  ListChecks,
+} from 'lucide-react-native';
 import { AuthScreen } from '../screens/AuthScreen';
 import { HomeScreen } from '../screens/HomeScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
@@ -11,6 +18,7 @@ import { IncomeScreen } from '../screens/IncomeScreen';
 import { TransactionsScreen } from '../screens/TransactionsScreen';
 import { AnalyticsScreen } from '../screens/AnalyticsScreen';
 import { PlanningScreen } from '../screens/PlanningScreen';
+import { TasksScreen } from '../screens/TasksScreen';
 import { EditTransactionScreen } from '../screens/EditTransactionScreen';
 import { colors } from '../design/tokens';
 
@@ -25,9 +33,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tabs = createBottomTabNavigator();
 
 function MainTabs({ onSignedOut }: { onSignedOut: () => void }) {
-  const icon = (glyph: string) => (
-    <Text style={{ fontSize: 24, lineHeight: 28 }}>{glyph}</Text>
-  );
+  const iconOptions = (Icon: typeof House) => ({
+    tabBarIcon: ({ color, size }: { color: string; size: number }) => (
+      <Icon color={color} size={size} strokeWidth={2.2} />
+    ),
+  });
   return (
     <Tabs.Navigator
       screenOptions={{
@@ -35,7 +45,6 @@ function MainTabs({ onSignedOut }: { onSignedOut: () => void }) {
         tabBarActiveTintColor: colors.emeraldDark,
         tabBarInactiveTintColor: colors.inkMuted,
         tabBarLabelStyle: { fontSize: 12, fontWeight: '700' },
-        tabBarIconStyle: { height: 30 },
         tabBarStyle: {
           height: 70,
           paddingBottom: 8,
@@ -48,29 +57,34 @@ function MainTabs({ onSignedOut }: { onSignedOut: () => void }) {
       <Tabs.Screen
         name="Home"
         component={HomeScreen}
-        options={{ title: 'الرئيسية', tabBarIcon: () => icon('⌂') }}
+        options={{ title: 'الرئيسية', ...iconOptions(House) }}
       />
       <Tabs.Screen
         name="Transactions"
         component={TransactionsScreen}
-        options={{ title: 'العمليات', tabBarIcon: () => icon('▤') }}
+        options={{ title: 'العمليات', ...iconOptions(ReceiptText) }}
       />
       <Tabs.Screen
         name="Analytics"
         component={AnalyticsScreen}
-        options={{ title: 'التحليل', tabBarIcon: () => icon('◔') }}
+        options={{ title: 'التحليل', ...iconOptions(ChartPie) }}
       />
       <Tabs.Screen
         name="Planning"
         component={PlanningScreen}
-        options={{ title: 'التخطيط', tabBarIcon: () => icon('◎') }}
+        options={{ title: 'التخطيط', ...iconOptions(CalendarCheck2) }}
       />
       <Tabs.Screen
         name="Settings"
-        options={{ title: 'الإعدادات', tabBarIcon: () => icon('⚙') }}
+        options={{ title: 'الإعدادات', ...iconOptions(Settings) }}
       >
         {props => <SettingsScreen {...props} onSignedOut={onSignedOut} />}
       </Tabs.Screen>
+      <Tabs.Screen
+        name="Tasks"
+        component={TasksScreen}
+        options={{ title: 'المهام', ...iconOptions(ListChecks) }}
+      />
     </Tabs.Navigator>
   );
 }

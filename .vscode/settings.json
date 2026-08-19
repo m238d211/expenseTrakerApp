@@ -1,0 +1,4 @@
+{
+    "java.compile.nullAnalysis.mode": "automatic",
+    "js/ts.tsdk.path": "node_modules\\typescript\\lib"
+}

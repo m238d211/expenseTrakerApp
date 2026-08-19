@@ -1,5 +1,12 @@
 import React from 'react';
-import { Alert, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Linking,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { clearToken, readToken } from '../auth/storage';
 import { api } from '../api/client';
 import { colors, radius, spacing, typography } from '../design/tokens';
@@ -27,7 +34,10 @@ export function SettingsScreen({
       setTelegramLink(result.link);
       await Linking.openURL(result.link);
     } catch (error) {
-      Alert.alert('تعذر ربط Telegram', error instanceof Error ? error.message : 'حاول مرة أخرى');
+      Alert.alert(
+        'تعذر ربط Telegram',
+        error instanceof Error ? error.message : 'حاول مرة أخرى',
+      );
     } finally {
       setTelegramLoading(false);
     }
@@ -46,11 +56,23 @@ export function SettingsScreen({
       </View>
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Telegram</Text>
-        <Text style={styles.cardText}>ولّد رابط الربط وافتحه داخل البوت قبل إرسال المصروف.</Text>
-        <Pressable onPress={connectTelegram} style={styles.telegramButton} disabled={telegramLoading}>
-          <Text style={styles.telegramButtonText}>{telegramLoading ? 'جارٍ إنشاء الرابط...' : 'ربط Telegram'}</Text>
+        <Text style={styles.cardText}>
+          ولّد رابط الربط وافتحه داخل البوت قبل إرسال المصروف.
+        </Text>
+        <Pressable
+          onPress={connectTelegram}
+          style={styles.telegramButton}
+          disabled={telegramLoading}
+        >
+          <Text style={styles.telegramButtonText}>
+            {telegramLoading ? 'جارٍ إنشاء الرابط...' : 'ربط Telegram'}
+          </Text>
         </Pressable>
-        {telegramLink ? <Text selectable style={styles.link}>{telegramLink}</Text> : null}
+        {telegramLink ? (
+          <Text selectable style={styles.link}>
+            {telegramLink}
+          </Text>
+        ) : null}
       </View>
       <Pressable onPress={signOut} style={styles.logout}>
         <Text style={styles.logoutText}>تسجيل الخروج</Text>
@@ -111,8 +133,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: spacing.md,
   },
-  telegramButtonText: { ...typography.body, color: colors.canvas, fontWeight: '700' },
-  link: { ...typography.label, color: colors.emerald, textAlign: 'left', marginTop: spacing.md },
+  telegramButtonText: {
+    ...typography.body,
+    color: colors.primaryText,
+    fontWeight: '700',
+  },
+  link: {
+    ...typography.label,
+    color: colors.emerald,
+    textAlign: 'left',
+    marginTop: spacing.md,
+  },
   version: {
     ...typography.label,
     color: colors.inkMuted,
