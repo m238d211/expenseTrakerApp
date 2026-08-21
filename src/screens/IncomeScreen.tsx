@@ -15,6 +15,8 @@ import { readToken } from '../auth/storage';
 import { Field } from '../components/Field';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { FormSheet } from '../components/FormSheet';
+import { FormTrigger } from '../components/FormTrigger';
 import { colors, radius, spacing, typography } from '../design/tokens';
 
 export function IncomeScreen({ navigation }: { navigation: any }) {
@@ -23,6 +25,7 @@ export function IncomeScreen({ navigation }: { navigation: any }) {
   const [payDay, setPayDay] = useState('1');
   const [recurring, setRecurring] = useState(true);
   const [editing, setEditing] = useState<Income | null>(null);
+  const [formVisible, setFormVisible] = useState(false);
   const [pending, setPending] = useState<Income | null>(null);
   const client = useQueryClient();
   const query = useQuery({
@@ -80,6 +83,7 @@ export function IncomeScreen({ navigation }: { navigation: any }) {
     setPayDay('1');
     setRecurring(true);
     setEditing(null);
+    setFormVisible(false);
   }
   function beginEdit(item: Income) {
     setEditing(item);
@@ -87,6 +91,7 @@ export function IncomeScreen({ navigation }: { navigation: any }) {
     setSource(item.type);
     setPayDay(String(item.payDay));
     setRecurring(item.recurring);
+    setFormVisible(true);
   }
   return (
     <ScrollView
@@ -97,12 +102,17 @@ export function IncomeScreen({ navigation }: { navigation: any }) {
         <Text style={styles.back}>→ رجوع</Text>
       </Pressable>
       <Text style={styles.title}>
-        {editing ? 'تعديل الدخل الثابت' : 'إضافة دخل ثابت'}
+        الدخل الثابت
       </Text>
       <Text style={styles.subtitle}>
         سجّل راتبك أو أي دخل متكرر، ويمكنك تعديله أو حذفه لاحقًا.
       </Text>
-      <View style={styles.form}>
+      <FormTrigger title="إضافة دخل ثابت" onPress={() => setFormVisible(true)} />
+      <FormSheet
+        visible={formVisible}
+        title={editing ? 'تعديل الدخل الثابت' : 'إضافة دخل ثابت'}
+        onClose={reset}
+      >
         <Field
           label="المبلغ بالدينار"
           placeholder="0"
@@ -153,7 +163,7 @@ export function IncomeScreen({ navigation }: { navigation: any }) {
             </Pressable>
           )}
         </View>
-      </View>
+      </FormSheet>
       <Text style={styles.sectionTitle}>الدخول المسجلة</Text>
       {query.data?.map(item => (
         <View key={item.id} style={styles.item}>

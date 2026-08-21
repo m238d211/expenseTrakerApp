@@ -7,20 +7,23 @@ import { readToken } from '../auth/storage';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Field } from '../components/Field';
 import { PrimaryButton } from '../components/PrimaryButton';
+import { FormSheet } from '../components/FormSheet';
+import { FormTrigger } from '../components/FormTrigger';
 import { colors, radius, spacing, typography } from '../design/tokens';
 
 type Filter = 'all' | 'open' | 'done' | 'overdue';
 function isOverdue(task: Task) {
   return Boolean(task.deadline && !task.completed && new Date(task.deadline) < new Date());
 }
-
+const currentDate =   new Date().toISOString().slice(0, 10);
 export function TasksScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [deadline, setDeadline] = useState('');
+  const [deadline, setDeadline] = useState(currentDate);
   const [category, setCategory] = useState('');
   const [priority, setPriority] = useState<Task['priority']>('medium');
   const [editing, setEditing] = useState<Task | null>(null);
+  const [formVisible, setFormVisible] = useState(false);
   const [pending, setPending] = useState<Task | null>(null);
   const [filter, setFilter] = useState<Filter>('open');
   const client = useQueryClient();
@@ -93,6 +96,7 @@ export function TasksScreen() {
     setCategory('');
     setPriority('medium');
     setEditing(null);
+    setFormVisible(false);
   }
   function beginEdit(task: Task) {
     setEditing(task);
@@ -101,6 +105,7 @@ export function TasksScreen() {
     setDeadline(task.deadline ? task.deadline.slice(0, 10) : '');
     setCategory(task.category ?? '');
     setPriority(task.priority);
+    setFormVisible(true);
   }
   const tasks = (query.data ?? []).filter(task => {
     if (filter === 'open') return !task.completed;
@@ -118,29 +123,33 @@ export function TasksScreen() {
         </View>
         <View style={styles.headerIcon}><ListChecks color={colors.emeraldDark} size={25} /></View>
       </View>
-      <View style={styles.form}>
-        <Text style={styles.formTitle}>{editing ? 'تعديل المهمة' : 'فكرة أو مهمة جديدة'}</Text>
-        <Field label="العنوان" placeholder="مثلاً: مراجعة الميزانية" value={title} onChangeText={setTitle} />
-        <Field label="وصف اختياري" placeholder="تفاصيل تساعدك تتذكرها" value={description} onChangeText={setDescription} />
-        <Field label="الموعد النهائي" placeholder="YYYY-MM-DD" value={deadline} onChangeText={setDeadline} />
-        <Field label="التصنيف" placeholder="مثلاً: مالي أو شخصي" value={category} onChangeText={setCategory} />
-        <Text style={styles.label}>الأولوية</Text>
-        <View style={styles.choices}>
-          {(['low', 'medium', 'high'] as const).map(value => (
-            <Pressable key={value} onPress={() => setPriority(value)} style={[styles.choice, priority === value && styles.choiceActive]}>
-              <Text style={priority === value ? styles.choiceActiveText : styles.choiceText}>
-                {value === 'low' ? 'منخفضة' : value === 'medium' ? 'متوسطة' : 'مهمة'}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-        <PrimaryButton
-          title={editing ? 'حفظ التعديل' : 'إضافة المهمة'}
-          loading={save.isPending}
-          onPress={() => title.trim() ? save.mutate() : Alert.alert('بيانات ناقصة', 'أدخل عنوان المهمة')}
-        />
-        {editing && <Pressable onPress={reset} style={styles.cancel}><Text style={styles.cancelText}>إلغاء</Text></Pressable>}
-      </View>
+      <FormTrigger title="إضافة مهمة أو فكرة" onPress={() => setFormVisible(true)} />
+      <FormSheet
+        visible={formVisible}
+        title={editing ? 'تعديل المهمة' : 'فكرة أو مهمة جديدة'}
+        onClose={reset}
+      >
+          <Field label="العنوان" placeholder="مثلاً: مراجعة الميزانية" value={title} onChangeText={setTitle} />
+          <Field label="وصف اختياري" placeholder="تفاصيل تساعدك تتذكرها" value={description} onChangeText={setDescription} />
+          <Field label="الموعد النهائي" placeholder="YYYY-MM-DD" value={deadline} onChangeText={setDeadline} />
+          <Field label="التصنيف" placeholder="مثلاً: مالي أو شخصي" value={category} onChangeText={setCategory} />
+          <Text style={styles.label}>الأولوية</Text>
+          <View style={styles.choices}>
+            {(['low', 'medium', 'high'] as const).map(value => (
+              <Pressable key={value} onPress={() => setPriority(value)} style={[styles.choice, priority === value && styles.choiceActive]}>
+                <Text style={priority === value ? styles.choiceActiveText : styles.choiceText}>
+                  {value === 'low' ? 'منخفضة' : value === 'medium' ? 'متوسطة' : 'مهمة'}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+          <PrimaryButton
+            title={editing ? 'حفظ التعديل' : 'إضافة المهمة'}
+            loading={save.isPending}
+            onPress={() => title.trim() ? save.mutate() : Alert.alert('بيانات ناقصة', 'أدخل عنوان المهمة')}
+          />
+          {editing && <Pressable onPress={reset} style={styles.cancel}><Text style={styles.cancelText}>إلغاء</Text></Pressable>}
+      </FormSheet>
       <View style={styles.filters}>
         {(['open', 'all', 'overdue', 'done'] as const).map(value => (
           <Pressable key={value} onPress={() => setFilter(value)} style={[styles.filter, filter === value && styles.filterActive]}>

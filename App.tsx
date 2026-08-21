@@ -5,7 +5,7 @@
  * @format
  */
 
-import { ActivityIndicator, AppState, StatusBar, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, AppState, StatusBar, StyleSheet, View, useColorScheme } from 'react-native';
 import {
   SafeAreaProvider,
 } from 'react-native-safe-area-context';
@@ -20,6 +20,7 @@ import { colors } from './src/design/tokens';
 const queryClient = new QueryClient();
 
 function App() {
+  const colorScheme = useColorScheme();
   const [ready, setReady] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   useEffect(() => { readToken().then(async token => { if (!token) return; try { await api.me(token); setAuthenticated(true); } catch { await clearToken(); } }).finally(() => setReady(true)); }, []);
@@ -34,7 +35,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}><SafeAreaProvider>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
       {ready ? <AppNavigator authenticated={authenticated} onSignedIn={() => setAuthenticated(true)} onSignedOut={() => setAuthenticated(false)} /> : <Startup />}
     </SafeAreaProvider></QueryClientProvider>
   );

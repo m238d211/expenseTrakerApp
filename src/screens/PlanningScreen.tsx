@@ -14,6 +14,8 @@ import { readToken } from '../auth/storage';
 import { Field } from '../components/Field';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { FormSheet } from '../components/FormSheet';
+import { FormTrigger } from '../components/FormTrigger';
 import { colors, radius, spacing, typography } from '../design/tokens';
 
 type Mode = 'budgets' | 'goals' | 'recurring';
@@ -63,6 +65,7 @@ export function PlanningScreen() {
 function Budgets() {
   const [amount, setAmount] = useState('');
   const [editing, setEditing] = useState<Budget | null>(null);
+  const [formVisible, setFormVisible] = useState(false);
   const [pending, setPending] = useState<Budget | null>(null);
   const client = useQueryClient();
   const query = useQuery({
@@ -93,6 +96,7 @@ function Budgets() {
     onSuccess: () => {
       setAmount('');
       setEditing(null);
+      setFormVisible(false);
       void client.invalidateQueries({ queryKey: ['budgets'] });
     },
     onError: e =>
@@ -119,6 +123,16 @@ function Budgets() {
   });
   return (
     <>
+      <FormTrigger title="إضافة ميزانية" onPress={() => setFormVisible(true)} />
+      <FormSheet
+        visible={formVisible}
+        title={editing ? 'تعديل الميزانية' : 'ميزانية هذا الشهر'}
+        onClose={() => {
+          setEditing(null);
+          setAmount('');
+          setFormVisible(false);
+        }}
+      >
       <View style={styles.form}>
         <Text style={styles.formTitle}>
           {editing ? 'تعديل الميزانية' : 'ميزانية هذا الشهر'}
@@ -145,6 +159,7 @@ function Budgets() {
               onPress={() => {
                 setEditing(null);
                 setAmount('');
+                setFormVisible(false);
               }}
               style={styles.cancel}
             >
@@ -153,6 +168,7 @@ function Budgets() {
           )}
         </View>
       </View>
+      </FormSheet>
       {query.data?.map(item => (
         <View key={item.id} style={styles.item}>
           <View style={styles.itemTop}>
@@ -161,6 +177,7 @@ function Budgets() {
                 onPress={() => {
                   setEditing(item);
                   setAmount(String(item.amount));
+                  setFormVisible(true);
                 }}
                 accessibilityLabel="تعديل الميزانية"
               >
@@ -201,6 +218,7 @@ function Goals() {
   const [amount, setAmount] = useState('');
   const [currentAmount, setCurrentAmount] = useState('0');
   const [editing, setEditing] = useState<SavingsGoal | null>(null);
+  const [formVisible, setFormVisible] = useState(false);
   const [pending, setPending] = useState<SavingsGoal | null>(null);
   const client = useQueryClient();
   const query = useQuery({
@@ -248,6 +266,7 @@ function Goals() {
       setAmount('');
       setCurrentAmount('0');
       setEditing(null);
+      setFormVisible(false);
       void client.invalidateQueries({ queryKey: ['savings-goals'] });
     },
     onError: e =>
@@ -299,6 +318,18 @@ function Goals() {
   );
   return (
     <>
+      <FormTrigger title="إضافة هدف ادخار" onPress={() => setFormVisible(true)} />
+      <FormSheet
+        visible={formVisible}
+        title={editing ? 'تعديل الهدف' : 'هدف ادخار جديد'}
+        onClose={() => {
+          setEditing(null);
+          setName('');
+          setAmount('');
+          setCurrentAmount('0');
+          setFormVisible(false);
+        }}
+      >
       <View style={styles.form}>
         <Text style={styles.formTitle}>
           {editing ? 'تعديل الهدف' : 'هدف ادخار جديد'}
@@ -340,6 +371,7 @@ function Goals() {
                 setName('');
                 setAmount('');
                 setCurrentAmount('0');
+                setFormVisible(false);
               }}
               style={styles.cancel}
             >
@@ -348,6 +380,7 @@ function Goals() {
           )}
         </View>
       </View>
+      </FormSheet>
       {query.data?.map(item => {
         const displayedCurrentAmount = derivedCurrentAmount;
         const progress = item.targetAmount
@@ -366,6 +399,7 @@ function Goals() {
                     setName(item.name);
                     setAmount(String(item.targetAmount));
                     setCurrentAmount(String(item.currentAmount));
+                    setFormVisible(true);
                   }}
                   accessibilityLabel="تعديل الهدف"
                 >
@@ -410,6 +444,7 @@ function Recurring() {
   const [frequency, setFrequency] =
     useState<RecurringTransaction['frequency']>('monthly');
   const [editing, setEditing] = useState<RecurringTransaction | null>(null);
+  const [formVisible, setFormVisible] = useState(false);
   const [pending, setPending] = useState<RecurringTransaction | null>(null);
   const client = useQueryClient();
   const query = useQuery({
@@ -442,6 +477,7 @@ function Recurring() {
       setAmount('');
       setDescription('');
       setEditing(null);
+      setFormVisible(false);
       void client.invalidateQueries({ queryKey: ['recurring-transactions'] });
     },
     onError: e =>
@@ -474,6 +510,17 @@ function Recurring() {
   };
   return (
     <>
+      <FormTrigger title="إضافة عملية متكررة" onPress={() => setFormVisible(true)} />
+      <FormSheet
+        visible={formVisible}
+        title={editing ? 'تعديل العملية المتكررة' : 'عملية متكررة جديدة'}
+        onClose={() => {
+          setEditing(null);
+          setDescription('');
+          setAmount('');
+          setFormVisible(false);
+        }}
+      >
       <View style={styles.form}>
         <Text style={styles.formTitle}>
           {editing ? 'تعديل العملية المتكررة' : 'عملية متكررة جديدة'}
@@ -530,6 +577,7 @@ function Recurring() {
                 setEditing(null);
                 setDescription('');
                 setAmount('');
+                setFormVisible(false);
               }}
               style={styles.cancel}
             >
@@ -538,6 +586,7 @@ function Recurring() {
           )}
         </View>
       </View>
+      </FormSheet>
       {query.data?.map(item => (
         <View key={item.id} style={styles.item}>
           <View style={styles.itemTop}>
@@ -548,6 +597,7 @@ function Recurring() {
                   setDescription(item.description);
                   setAmount(String(item.amount));
                   setFrequency(item.frequency);
+                  setFormVisible(true);
                 }}
                 accessibilityLabel="تعديل العملية المتكررة"
               >

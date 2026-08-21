@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginTop: spacing.md,
     borderWidth: 1,
-    borderColor: '#BCE8D5',
+    borderColor: colors.borderAccent,
   },
   bannerCopy: { flex: 1 },
   bannerTitle: {
