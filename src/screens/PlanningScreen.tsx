@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Alert,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -16,13 +14,18 @@ import { PrimaryButton } from '../components/PrimaryButton';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { FormSheet } from '../components/FormSheet';
 import { FormTrigger } from '../components/FormTrigger';
+import { showError } from '../ui/toast';
+import { DataLoading } from '../components/DataLoading';
+import { DataError } from '../components/DataError';
+import { RefreshableScrollView } from '../components/RefreshableScrollView';
 import { colors, radius, spacing, typography } from '../design/tokens';
+import { nextRecurringDate } from '../utils/dates';
 
 type Mode = 'budgets' | 'goals' | 'recurring';
 export function PlanningScreen() {
-  const [mode, setMode] = useState<Mode>('budgets');
+  const [mode, setMode] = useState<Mode>('goals');
   return (
-    <ScrollView
+      <RefreshableScrollView
       contentContainerStyle={styles.screen}
       keyboardShouldPersistTaps="handled"
     >
@@ -58,7 +61,7 @@ export function PlanningScreen() {
       ) : (
         <Recurring />
       )}
-    </ScrollView>
+    </RefreshableScrollView>
   );
 }
 
@@ -99,11 +102,7 @@ function Budgets() {
       setFormVisible(false);
       void client.invalidateQueries({ queryKey: ['budgets'] });
     },
-    onError: e =>
-      Alert.alert(
-        'تعذر حفظ الميزانية',
-        e instanceof Error ? e.message : 'حاول مرة أخرى',
-      ),
+    onError: e => showError('تعذر حفظ الميزانية', e),
   });
   const remove = useMutation({
     mutationFn: async (id: string) => {
@@ -115,11 +114,7 @@ function Budgets() {
       setPending(null);
       void client.invalidateQueries({ queryKey: ['budgets'] });
     },
-    onError: e =>
-      Alert.alert(
-        'تعذر حذف الميزانية',
-        e instanceof Error ? e.message : 'حاول مرة أخرى',
-      ),
+    onError: e => showError('تعذر حذف الميزانية', e),
   });
   return (
     <>
@@ -151,7 +146,7 @@ function Budgets() {
             onPress={() =>
               Number(amount) > 0
                 ? mutation.mutate()
-                : Alert.alert('بيانات ناقصة', 'أدخل مبلغ الميزانية')
+                : showError('بيانات ناقصة', 'أدخل مبلغ الميزانية')
             }
           />
           {editing && (
@@ -169,7 +164,7 @@ function Budgets() {
         </View>
       </View>
       </FormSheet>
-      {query.data?.map(item => (
+      {query.isError ? <DataError onRetry={() => void query.refetch()} /> : query.isLoading ? <DataLoading /> : query.data?.map(item => (
         <View key={item.id} style={styles.item}>
           <View style={styles.itemTop}>
             <View style={styles.iconActions}>
@@ -216,7 +211,6 @@ function Budgets() {
 function Goals() {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
-  const [currentAmount, setCurrentAmount] = useState('0');
   const [editing, setEditing] = useState<SavingsGoal | null>(null);
   const [formVisible, setFormVisible] = useState(false);
   const [pending, setPending] = useState<SavingsGoal | null>(null);
@@ -253,27 +247,20 @@ function Goals() {
         ? api.updateSavingsGoal(token, editing.id, {
             name: name.trim(),
             targetAmount: Number(amount),
-            currentAmount: Number(currentAmount),
           })
         : api.createSavingsGoal(token, {
-            name: name.trim(),
-            targetAmount: Number(amount),
-            currentAmount: Number(currentAmount),
-          });
+          name: name.trim(),
+          targetAmount: Number(amount),
+        });
     },
     onSuccess: () => {
       setName('');
       setAmount('');
-      setCurrentAmount('0');
       setEditing(null);
       setFormVisible(false);
       void client.invalidateQueries({ queryKey: ['savings-goals'] });
     },
-    onError: e =>
-      Alert.alert(
-        'تعذر حفظ الهدف',
-        e instanceof Error ? e.message : 'حاول مرة أخرى',
-      ),
+    onError: e => showError('تعذر حفظ الهدف', e),
   });
   const remove = useMutation({
     mutationFn: async (id: string) => {
@@ -285,37 +272,8 @@ function Goals() {
       setPending(null);
       void client.invalidateQueries({ queryKey: ['savings-goals'] });
     },
-    onError: e =>
-      Alert.alert(
-        'تعذر حذف الهدف',
-        e instanceof Error ? e.message : 'حاول مرة أخرى',
-      ),
+    onError: e => showError('تعذر حذف الهدف', e),
   });
-  const currentBalance =
-    (monthly.data?.openingBalance ?? 0) +
-    (monthly.data?.income ?? 0) -
-    (monthly.data?.expenses ?? 0);
-  const recurringCommitment = (recurring.data ?? [])
-    .filter(item => item.isActive && item.type === 'expense')
-    .reduce((total, item) => {
-      const monthlyAmount =
-        item.frequency === 'daily'
-          ? item.amount * 30
-          : item.frequency === 'weekly'
-          ? item.amount * 4
-          : item.frequency === 'yearly'
-          ? item.amount / 12
-          : item.amount;
-      return total + monthlyAmount;
-    }, 0);
-  const budgetOverspend = (monthly.data?.budgets ?? []).reduce(
-    (total, budget) => total + Math.max(0, budget.used - budget.amount),
-    0,
-  );
-  const derivedCurrentAmount = Math.max(
-    0,
-    Math.round(currentBalance - recurringCommitment - budgetOverspend),
-  );
   return (
     <>
       <FormTrigger title="إضافة هدف ادخار" onPress={() => setFormVisible(true)} />
@@ -326,7 +284,6 @@ function Goals() {
           setEditing(null);
           setName('');
           setAmount('');
-          setCurrentAmount('0');
           setFormVisible(false);
         }}
       >
@@ -347,21 +304,17 @@ function Goals() {
           onChangeText={setAmount}
           keyboardType="number-pad"
         />
-        <Field
-          label="المبلغ المدخر حاليًا"
-          placeholder="0"
-          value={currentAmount}
-          onChangeText={setCurrentAmount}
-          keyboardType="number-pad"
-        />
+        <Text style={styles.note}>
+          يُحسب المبلغ المتاح تلقائياً من الرصيد بعد خصم الصرفيات المتكررة وميزانيات الشهر.
+        </Text>
         <View style={styles.formActions}>
           <PrimaryButton
             title={editing ? 'حفظ التعديل' : 'إضافة هدف'}
             loading={mutation.isPending}
             onPress={() =>
-              name.trim() && Number(amount) > 0 && Number(currentAmount) >= 0
+              name.trim() && Number(amount) > 0
                 ? mutation.mutate()
-                : Alert.alert('بيانات ناقصة', 'أدخل اسم الهدف والمبلغ')
+                : showError('بيانات ناقصة', 'أدخل اسم الهدف والمبلغ')
             }
           />
           {editing && (
@@ -370,7 +323,6 @@ function Goals() {
                 setEditing(null);
                 setName('');
                 setAmount('');
-                setCurrentAmount('0');
                 setFormVisible(false);
               }}
               style={styles.cancel}
@@ -381,9 +333,34 @@ function Goals() {
         </View>
       </View>
       </FormSheet>
-      {query.data?.map(item => {
-        const displayedCurrentAmount = derivedCurrentAmount;
-        const progress = item.targetAmount
+      {query.isError || monthly.isError || recurring.isError ? (
+        <DataError onRetry={() => {
+          void query.refetch();
+          void monthly.refetch();
+          void recurring.refetch();
+        }} />
+      ) : query.isLoading || monthly.isLoading || recurring.isLoading ? <DataLoading /> : query.data?.map(item => {
+        const currentBalance =
+          (monthly.data?.openingBalance ?? 0) +
+          (monthly.data?.income ?? 0) -
+          (monthly.data?.expenses ?? 0);
+        const recurringCommitment = (recurring.data ?? [])
+          .filter(recurringItem => recurringItem.isActive && recurringItem.type === 'expense')
+          .reduce((total, recurringItem) => {
+            if (recurringItem.frequency === 'daily') return total + recurringItem.amount * 30;
+            if (recurringItem.frequency === 'weekly') return total + recurringItem.amount * 4;
+            if (recurringItem.frequency === 'yearly') return total + recurringItem.amount / 12;
+            return total + recurringItem.amount;
+          }, 0);
+        const monthlyBudgetTotal = (monthly.data?.budgets ?? []).reduce(
+          (total, budget) => total + budget.amount,
+          0,
+        );
+        const displayedCurrentAmount = Math.max(
+          0,
+          Math.round(currentBalance - recurringCommitment - monthlyBudgetTotal),
+        );
+        const progress = item.targetAmount > 0
           ? Math.min(
               100,
               Math.round((displayedCurrentAmount / item.targetAmount) * 100),
@@ -398,7 +375,6 @@ function Goals() {
                     setEditing(item);
                     setName(item.name);
                     setAmount(String(item.targetAmount));
-                    setCurrentAmount(String(item.currentAmount));
                     setFormVisible(true);
                   }}
                   accessibilityLabel="تعديل الهدف"
@@ -443,6 +419,7 @@ function Recurring() {
   const [description, setDescription] = useState('');
   const [frequency, setFrequency] =
     useState<RecurringTransaction['frequency']>('monthly');
+  const [dayOfMonth, setDayOfMonth] = useState(String(new Date().getDate()));
   const [editing, setEditing] = useState<RecurringTransaction | null>(null);
   const [formVisible, setFormVisible] = useState(false);
   const [pending, setPending] = useState<RecurringTransaction | null>(null);
@@ -464,27 +441,30 @@ function Recurring() {
             amount: Number(amount),
             description: description.trim(),
             frequency,
+            ...(frequency === 'monthly' ? { dayOfMonth: Number(dayOfMonth) } : {}),
           })
         : api.createRecurringTransaction(token, {
             amount: Number(amount),
             description: description.trim(),
             type: 'expense',
             frequency,
-            nextRunAt: new Date().toISOString(),
+            nextRunAt: nextRecurringDate(
+              frequency,
+              new Date(),
+              frequency === 'monthly' ? Number(dayOfMonth) : undefined,
+            ).toISOString(),
+            ...(frequency === 'monthly' ? { dayOfMonth: Number(dayOfMonth) } : {}),
           });
     },
     onSuccess: () => {
       setAmount('');
       setDescription('');
+      setDayOfMonth(String(new Date().getDate()));
       setEditing(null);
       setFormVisible(false);
       void client.invalidateQueries({ queryKey: ['recurring-transactions'] });
     },
-    onError: e =>
-      Alert.alert(
-        'تعذر حفظ العملية المتكررة',
-        e instanceof Error ? e.message : 'حاول مرة أخرى',
-      ),
+    onError: e => showError('تعذر حفظ العملية المتكررة', e),
   });
   const remove = useMutation({
     mutationFn: async (id: string) => {
@@ -496,11 +476,7 @@ function Recurring() {
       setPending(null);
       void client.invalidateQueries({ queryKey: ['recurring-transactions'] });
     },
-    onError: e =>
-      Alert.alert(
-        'تعذر حذف العملية المتكررة',
-        e instanceof Error ? e.message : 'حاول مرة أخرى',
-      ),
+    onError: e => showError('تعذر حذف العملية المتكررة', e),
   });
   const labels = {
     daily: 'يومي',
@@ -518,6 +494,7 @@ function Recurring() {
           setEditing(null);
           setDescription('');
           setAmount('');
+          setDayOfMonth(String(new Date().getDate()));
           setFormVisible(false);
         }}
       >
@@ -561,6 +538,15 @@ function Recurring() {
             ),
           )}
         </View>
+        {frequency === 'monthly' && (
+          <Field
+            label="يوم التنفيذ من الشهر"
+            placeholder="1 - 31"
+            value={dayOfMonth}
+            onChangeText={setDayOfMonth}
+            keyboardType="number-pad"
+          />
+        )}
         <View style={styles.formActions}>
           <PrimaryButton
             title={editing ? 'حفظ التعديل' : 'إضافة العملية'}
@@ -568,7 +554,7 @@ function Recurring() {
             onPress={() =>
               description.trim() && Number(amount) > 0
                 ? mutation.mutate()
-                : Alert.alert('بيانات ناقصة', 'أدخل الوصف والمبلغ')
+                : showError('بيانات ناقصة', 'أدخل الوصف والمبلغ')
             }
           />
           {editing && (
@@ -587,7 +573,7 @@ function Recurring() {
         </View>
       </View>
       </FormSheet>
-      {query.data?.map(item => (
+      {query.isError ? <DataError onRetry={() => void query.refetch()} /> : query.isLoading ? <DataLoading /> : query.data?.map(item => (
         <View key={item.id} style={styles.item}>
           <View style={styles.itemTop}>
             <View style={styles.iconActions}>
@@ -597,6 +583,7 @@ function Recurring() {
                   setDescription(item.description);
                   setAmount(String(item.amount));
                   setFrequency(item.frequency);
+                  setDayOfMonth(String(item.dayOfMonth ?? new Date().getDate()));
                   setFormVisible(true);
                 }}
                 accessibilityLabel="تعديل العملية المتكررة"

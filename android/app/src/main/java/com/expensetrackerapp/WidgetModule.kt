@@ -15,10 +15,10 @@ class WidgetModule(private val context: ReactApplicationContext) : ReactContextB
   override fun getName() = "ExpenseWidget"
 
   @ReactMethod
-  fun updateSnapshot(balance: Double, transactions: ReadableArray) {
+  fun updateSnapshot(balance: Double, transactions: ReadableArray, updatedAt: String) {
     val prefs = context.getSharedPreferences("expense_widget", Context.MODE_PRIVATE)
     val lines = (0 until minOf(3, transactions.size())).joinToString("\n") { transactions.getString(it) ?: "" }
-    prefs.edit().putString("balance", balance.toLong().toString()).putString("transactions", lines).apply()
+    prefs.edit().putString("balance", balance.toLong().toString()).putString("transactions", lines).putString("updatedAt", updatedAt).apply()
     val manager = AppWidgetManager.getInstance(context)
     val ids = manager.getAppWidgetIds(ComponentName(context, ExpenseWidgetProvider::class.java))
     ids.forEach { ExpenseWidgetProvider.update(context, manager, it) }

@@ -89,23 +89,72 @@ export type TelegramLinkResponse = {
   expiresInSeconds: number;
 };
 
+export type ApiErrorKind = 'network' | 'auth' | 'server' | 'validation' | 'unknown';
+
+export class ApiError extends Error {
+  readonly status?: number;
+  readonly kind: ApiErrorKind;
+
+  constructor(message: string, kind: ApiErrorKind = 'unknown', status?: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.kind = kind;
+    this.status = status;
+  }
+}
+
+export type PaginatedTransactions = {
+  data: Transaction[];
+  page: number;
+  limit: number;
+};
+
 async function request<T>(
   path: string,
   init: RequestInit = {},
   token?: string,
 ): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...init.headers,
-    },
-  });
-  const body = await response.json().catch(() => null);
-  if (!response.ok)
-    throw new Error(body?.message ?? 'Unable to connect to the server');
-  return body as T;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      ...init,
+      signal: controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...init.headers,
+      },
+    });
+    const body = await response.json().catch(() => null);
+    if (!response.ok) {
+      const kind: ApiErrorKind =
+        response.status === 401 || response.status === 403
+          ? 'auth'
+          : response.status >= 500
+          ? 'server'
+          : response.status >= 400
+          ? 'validation'
+          : 'unknown';
+      throw new ApiError(
+        body?.message ?? 'تعذر الاتصال بالخادم',
+        kind,
+        response.status,
+      );
+    }
+    return body as T;
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new ApiError('انتهت مهلة الاتصال بالخادم', 'network');
+    }
+    throw new ApiError(
+      error instanceof Error ? error.message : 'تعذر الاتصال بالخادم',
+      'network',
+    );
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export const api = {
@@ -120,14 +169,22 @@ export const api = {
       body: JSON.stringify({ email, password, name }),
     }),
   me: (token: string) => request<User>('/auth/me', {}, token),
-  transactions: (token: string) =>
-    request<{ data: Transaction[] }>('/transactions?limit=50', {}, token),
-  transactionsFiltered: (token: string, params: string) =>
-    request<{ data: Transaction[] }>(
-      `/transactions?limit=100&${params}`,
+  transactions: (token: string, page = 1, limit = 20) =>
+    request<PaginatedTransactions>(
+      `/transactions?page=${page}&limit=${limit}`,
       {},
       token,
     ),
+  transactionsFiltered: (token: string, params: string, page = 1, limit = 20) => {
+    const query = new URLSearchParams(params);
+    query.set('page', String(page));
+    query.set('limit', String(limit));
+    return request<PaginatedTransactions>(
+      `/transactions?${query.toString()}`,
+      {},
+      token,
+    );
+  },
   transaction: (token: string, id: string) =>
     request<Transaction>(`/transactions/${id}`, {}, token),
   categories: (token: string) => request<Category[]>('/categories', {}, token),

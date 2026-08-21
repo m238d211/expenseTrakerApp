@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../api/client';
 import { readToken } from '../auth/storage';
 import { Field } from '../components/Field';
 import { PrimaryButton } from '../components/PrimaryButton';
+import { DataLoading } from '../components/DataLoading';
+import { showError } from '../ui/toast';
 import { colors, radius, spacing, typography } from '../design/tokens';
 
 export function TransactionScreen({ route, navigation }: { route: { params: { type: 'expense' | 'income' } }; navigation: any }) {
@@ -21,7 +23,7 @@ export function TransactionScreen({ route, navigation }: { route: { params: { ty
   const mutation = useMutation({
     mutationFn: async () => { const token = await readToken(); if (!token) throw new Error('انتهت الجلسة'); return api.createTransaction(token, { amount: Number(amount), type, description, categoryId }); },
     onSuccess: async () => { await queryClient.invalidateQueries({ queryKey: ['transactions'] }); await queryClient.invalidateQueries({ queryKey: ['monthly'] }); navigation.goBack(); },
-    onError: error => Alert.alert('تعذر الحفظ', error instanceof Error ? error.message : 'حاول مرة أخرى'),
+    onError: error => showError('تعذر الحفظ', error),
   });
   const valid = Number(amount) > 0 && description.trim() && (type === 'income' || categoryId);
   return (
@@ -33,10 +35,10 @@ export function TransactionScreen({ route, navigation }: { route: { params: { ty
       <Field label="الوصف" placeholder="مثلاً: مشتريات البيت" value={description} onChangeText={setDescription} />
       {type === 'expense' && <View style={styles.categoryGroup}>
         <Text style={styles.label}>التصنيف *</Text>
-        <View style={styles.categories}>{categories.data?.map(category => <Pressable key={category.id} onPress={() => setCategoryId(category.id)} style={[styles.category, categoryId === category.id && styles.selectedCategory]}><Text style={[styles.categoryText, categoryId === category.id && styles.selectedCategoryText]}>{category.name}</Text></Pressable>)}</View>
+        {categories.isLoading ? <DataLoading label="جارٍ تحميل التصنيفات..." /> : <View style={styles.categories}>{categories.data?.map(category => <Pressable key={category.id} onPress={() => setCategoryId(category.id)} style={[styles.category, categoryId === category.id && styles.selectedCategory]}><Text style={[styles.categoryText, categoryId === category.id && styles.selectedCategoryText]}>{category.name}</Text></Pressable>)}</View>}
         {!categoryId && <Text style={styles.hint}>اختار تصنيف حتى يظهر المصروف بالتحليل المالي.</Text>}
       </View>}
-      <PrimaryButton title="حفظ العملية" loading={mutation.isPending} onPress={() => valid ? mutation.mutate() : Alert.alert('بيانات ناقصة', type === 'expense' ? 'أدخل المبلغ والوصف واختار التصنيف' : 'أدخل المبلغ والوصف')} />
+      <PrimaryButton title="حفظ العملية" loading={mutation.isPending} onPress={() => valid ? mutation.mutate() : showError('بيانات ناقصة', type === 'expense' ? 'أدخل المبلغ والوصف واختار التصنيف' : 'أدخل المبلغ والوصف')} />
     </ScrollView>
   );
 }

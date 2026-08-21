@@ -7,7 +7,6 @@ import {
   ChartPie,
   House,
   ReceiptText,
-  Settings,
   ListChecks,
 } from 'lucide-react-native';
 import { AuthScreen } from '../screens/AuthScreen';
@@ -28,11 +27,12 @@ export type RootStackParamList = {
   AddTransaction: { type: 'expense' | 'income' };
   AddIncome: undefined;
   EditTransaction: { id: string };
+  Settings: undefined;
 };
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tabs = createBottomTabNavigator();
 
-function MainTabs({ onSignedOut }: { onSignedOut: () => void }) {
+function MainTabs() {
   const iconOptions = (Icon: typeof House) => ({
     tabBarIcon: ({ color, size }: { color: string; size: number }) => (
       <Icon color={color} size={size} strokeWidth={2.2} />
@@ -62,11 +62,7 @@ function MainTabs({ onSignedOut }: { onSignedOut: () => void }) {
         },
       }}
     >
-      <Tabs.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{ title: 'الرئيسية', ...iconOptions(House) }}
-      />
+
       <Tabs.Screen
         name="Transactions"
         component={TransactionsScreen}
@@ -77,17 +73,17 @@ function MainTabs({ onSignedOut }: { onSignedOut: () => void }) {
         component={AnalyticsScreen}
         options={{ title: 'التحليل', ...iconOptions(ChartPie) }}
       />
+        <Tabs.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ title: 'الرئيسية', ...iconOptions(House) }}
+      />
       <Tabs.Screen
         name="Planning"
         component={PlanningScreen}
         options={{ title: 'التخطيط', ...iconOptions(CalendarCheck2) }}
       />
-      <Tabs.Screen
-        name="Settings"
-        options={{ title: 'الإعدادات', ...iconOptions(Settings) }}
-      >
-        {props => <SettingsScreen {...props} onSignedOut={onSignedOut} />}
-      </Tabs.Screen>
+
       <Tabs.Screen
         name="Tasks"
         component={TasksScreen}
@@ -117,7 +113,7 @@ export function AppNavigator({
         {authenticated ? (
           <>
             <Stack.Screen name="MainTabs">
-              {() => <MainTabs onSignedOut={onSignedOut} />}
+              {() => <MainTabs />}
             </Stack.Screen>
             <Stack.Screen name="AddTransaction">
               {props => <TransactionScreen {...props} />}
@@ -127,6 +123,9 @@ export function AppNavigator({
             </Stack.Screen>
             <Stack.Screen name="EditTransaction">
               {props => <EditTransactionScreen {...props} />}
+            </Stack.Screen>
+            <Stack.Screen name="Settings">
+              {props => <SettingsScreen {...props} onSignedOut={onSignedOut} />}
             </Stack.Screen>
           </>
         ) : (

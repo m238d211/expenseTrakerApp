@@ -10,7 +10,11 @@ export async function registerForPushNotifications(accessToken: string) {
   const deviceToken = await messaging().getToken();
   if (deviceToken) await api.registerDevice(accessToken, deviceToken, Platform.OS === 'ios' ? 'ios' : 'android');
   const unsubscribeTokenRefresh = messaging().onTokenRefresh(async nextToken => {
-    await api.registerDevice(accessToken, nextToken, Platform.OS === 'ios' ? 'ios' : 'android');
+    try {
+      await api.registerDevice(accessToken, nextToken, Platform.OS === 'ios' ? 'ios' : 'android');
+    } catch {
+      // Registration will be retried on the next authenticated app start.
+    }
   });
   const unsubscribeForeground = messaging().onMessage(async message => {
     const title = message.notification?.title ?? 'مصروفي';
@@ -21,4 +25,9 @@ export async function registerForPushNotifications(accessToken: string) {
     unsubscribeTokenRefresh();
     unsubscribeForeground();
   };
+}
+
+export async function unregisterForPushNotifications(accessToken: string) {
+  const deviceToken = await messaging().getToken();
+  if (deviceToken) await api.removeDevice(accessToken, deviceToken);
 }

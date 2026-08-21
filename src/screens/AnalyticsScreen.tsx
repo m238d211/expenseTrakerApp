@@ -1,9 +1,12 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../api/client';
 import { readToken } from '../auth/storage';
 import { colors, radius, spacing, typography } from '../design/tokens';
+import { DataLoading } from '../components/DataLoading';
+import { DataError } from '../components/DataError';
+import { RefreshableScrollView } from '../components/RefreshableScrollView';
 
 export function AnalyticsScreen() {
   const monthly = useQuery({
@@ -39,8 +42,28 @@ export function AnalyticsScreen() {
     ...trendItems.map(item => Math.max(item.income, item.expenses)),
     1,
   );
+  if (monthly.isLoading || safe.isLoading || trends.isLoading) {
+    return (
+      <RefreshableScrollView contentContainerStyle={styles.screen}>
+        <Text style={styles.title}>التحليل المالي</Text>
+        <DataLoading />
+      </RefreshableScrollView>
+    );
+  }
+  if (monthly.isError || safe.isError || trends.isError) {
+    return (
+      <RefreshableScrollView contentContainerStyle={styles.screen}>
+        <Text style={styles.title}>حدثت مشكلة اثناء تحديث البيانات</Text>
+        <DataError onRetry={() => {
+          void monthly.refetch();
+          void safe.refetch();
+          void trends.refetch();
+        }} />
+      </RefreshableScrollView>
+    );
+  }
   return (
-    <ScrollView contentContainerStyle={styles.screen}>
+    <RefreshableScrollView contentContainerStyle={styles.screen}>
       <Text style={styles.title}>التحليل المالي</Text>
       <Text style={styles.subtitle}>اعرف وين تروح فلوسك قبل نهاية الشهر.</Text>
       <View style={styles.grid}>
@@ -115,7 +138,7 @@ export function AnalyticsScreen() {
           <Text style={styles.note}>أضف عمليات مصنفة حتى يظهر التحليل.</Text>
         )}
       </View>
-    </ScrollView>
+    </RefreshableScrollView>
   );
 }
 function Metric({

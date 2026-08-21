@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Alert,
   Linking,
   Pressable,
   StyleSheet,
@@ -9,6 +8,8 @@ import {
 } from 'react-native';
 import { clearToken, readToken } from '../auth/storage';
 import { api } from '../api/client';
+import { showError } from '../ui/toast';
+import { unregisterForPushNotifications } from '../notifications/push';
 import { colors, radius, spacing, typography } from '../design/tokens';
 export function SettingsScreen({
   navigation,
@@ -21,6 +22,14 @@ export function SettingsScreen({
   const [telegramLoading, setTelegramLoading] = React.useState(false);
 
   async function signOut() {
+    const token = await readToken();
+    if (token) {
+      try {
+        await unregisterForPushNotifications(token);
+      } catch {
+        // Logout must continue even if device cleanup cannot reach the server.
+      }
+    }
     await clearToken();
     onSignedOut();
   }
@@ -34,10 +43,7 @@ export function SettingsScreen({
       setTelegramLink(result.link);
       await Linking.openURL(result.link);
     } catch (error) {
-      Alert.alert(
-        'تعذر ربط Telegram',
-        error instanceof Error ? error.message : 'حاول مرة أخرى',
-      );
+      showError('تعذر ربط Telegram', error);
     } finally {
       setTelegramLoading(false);
     }

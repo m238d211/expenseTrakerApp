@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Alert,
   Pressable,
-  ScrollView,
   StyleSheet,
   Switch,
   Text,
@@ -17,6 +15,10 @@ import { PrimaryButton } from '../components/PrimaryButton';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { FormSheet } from '../components/FormSheet';
 import { FormTrigger } from '../components/FormTrigger';
+import { DataLoading } from '../components/DataLoading';
+import { DataError } from '../components/DataError';
+import { RefreshableScrollView } from '../components/RefreshableScrollView';
+import { showError } from '../ui/toast';
 import { colors, radius, spacing, typography } from '../design/tokens';
 
 export function IncomeScreen({ navigation }: { navigation: any }) {
@@ -55,11 +57,7 @@ export function IncomeScreen({ navigation }: { navigation: any }) {
       void client.invalidateQueries();
       if (editing) navigation.goBack();
     },
-    onError: error =>
-      Alert.alert(
-        'تعذر حفظ الدخل',
-        error instanceof Error ? error.message : 'حاول مرة أخرى',
-      ),
+    onError: error => showError('تعذر حفظ الدخل', error),
   });
   const remove = useMutation({
     mutationFn: async (id: string) => {
@@ -71,11 +69,7 @@ export function IncomeScreen({ navigation }: { navigation: any }) {
       setPending(null);
       void client.invalidateQueries();
     },
-    onError: error =>
-      Alert.alert(
-        'تعذر حذف الدخل',
-        error instanceof Error ? error.message : 'حاول مرة أخرى',
-      ),
+    onError: error => showError('تعذر حذف الدخل', error),
   });
   function reset() {
     setAmount('');
@@ -94,7 +88,7 @@ export function IncomeScreen({ navigation }: { navigation: any }) {
     setFormVisible(true);
   }
   return (
-    <ScrollView
+    <RefreshableScrollView
       contentContainerStyle={styles.screen}
       keyboardShouldPersistTaps="handled"
     >
@@ -151,7 +145,7 @@ export function IncomeScreen({ navigation }: { navigation: any }) {
               Number(payDay) >= 1 &&
               Number(payDay) <= 31
                 ? mutation.mutate()
-                : Alert.alert(
+                : showError(
                     'بيانات غير صحيحة',
                     'تحقق من المبلغ ومصدر الدخل ويوم الاستلام',
                   )
@@ -165,7 +159,7 @@ export function IncomeScreen({ navigation }: { navigation: any }) {
         </View>
       </FormSheet>
       <Text style={styles.sectionTitle}>الدخول المسجلة</Text>
-      {query.data?.map(item => (
+      {query.isError ? <DataError onRetry={() => void query.refetch()} /> : query.isLoading ? <DataLoading /> : query.data?.map(item => (
         <View key={item.id} style={styles.item}>
           <View style={styles.itemTop}>
             <View style={styles.actions}>
@@ -195,7 +189,7 @@ export function IncomeScreen({ navigation }: { navigation: any }) {
           </Text>
         </View>
       ))}
-      {!query.data?.length && (
+      {!query.isLoading && !query.isError && !query.data?.length && (
         <Text style={styles.empty}>لا توجد دخول مسجلة بعد.</Text>
       )}
       <ConfirmDialog
@@ -207,7 +201,7 @@ export function IncomeScreen({ navigation }: { navigation: any }) {
         onCancel={() => setPending(null)}
         onConfirm={() => pending && remove.mutate(pending.id)}
       />
-    </ScrollView>
+    </RefreshableScrollView>
   );
 }
 

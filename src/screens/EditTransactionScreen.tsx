@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,6 +11,7 @@ import { api } from '../api/client';
 import { readToken } from '../auth/storage';
 import { Field } from '../components/Field';
 import { PrimaryButton } from '../components/PrimaryButton';
+import { showError } from '../ui/toast';
 import { colors, radius, spacing, typography } from '../design/tokens';
 
 export function EditTransactionScreen({
@@ -66,11 +66,7 @@ export function EditTransactionScreen({
       await client.invalidateQueries();
       navigation.goBack();
     },
-    onError: error =>
-      Alert.alert(
-        'تعذر التعديل',
-        error instanceof Error ? error.message : 'حاول مرة أخرى',
-      ),
+    onError: error => showError('تعذر التعديل', error),
   });
   if (transaction.isLoading)
     return (
@@ -136,7 +132,7 @@ export function EditTransactionScreen({
         onPress={() =>
           Number(amount) > 0 && description.trim()
             ? mutation.mutate()
-            : Alert.alert('بيانات ناقصة', 'أدخل المبلغ والوصف')
+            : showError('بيانات ناقصة', 'أدخل المبلغ والوصف')
         }
       />
     </ScrollView>

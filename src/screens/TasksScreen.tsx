@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Check, Circle, ListChecks, Pencil, Trash2 } from 'lucide-react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, Task } from '../api/client';
@@ -9,13 +9,18 @@ import { Field } from '../components/Field';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { FormSheet } from '../components/FormSheet';
 import { FormTrigger } from '../components/FormTrigger';
+import { DataLoading } from '../components/DataLoading';
+import { DataError } from '../components/DataError';
+import { RefreshableScrollView } from '../components/RefreshableScrollView';
+import { showError } from '../ui/toast';
 import { colors, radius, spacing, typography } from '../design/tokens';
+import { formatLocalDate, localDateEndOfDay } from '../utils/dates';
 
 type Filter = 'all' | 'open' | 'done' | 'overdue';
 function isOverdue(task: Task) {
   return Boolean(task.deadline && !task.completed && new Date(task.deadline) < new Date());
 }
-const currentDate =   new Date().toISOString().slice(0, 10);
+const currentDate = formatLocalDate();
 export function TasksScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -43,7 +48,7 @@ export function TasksScreen() {
         title: title.trim(),
         description: description.trim() || undefined,
         deadline: deadline.trim()
-          ? new Date(deadline.trim() + 'T23:59:59').toISOString()
+          ? localDateEndOfDay(deadline.trim())
           : undefined,
         category: category.trim() || undefined,
         priority,
@@ -56,8 +61,7 @@ export function TasksScreen() {
       reset();
       void client.invalidateQueries({ queryKey: ['tasks'] });
     },
-    onError: error =>
-      Alert.alert('تعذر حفظ المهمة', error instanceof Error ? error.message : 'تحقق من البيانات'),
+    onError: error => showError('تعذر حفظ المهمة', error, 'تحقق من البيانات'),
   });
   const toggle = useMutation({
     mutationFn: async (task: Task) => {
@@ -108,14 +112,15 @@ export function TasksScreen() {
     setFormVisible(true);
   }
   const tasks = (query.data ?? []).filter(task => {
-    if (filter === 'open') return !task.completed;
+    const snoozed = Boolean(task.snoozedUntil && new Date(task.snoozedUntil) > new Date());
+    if (filter === 'open') return !task.completed && !snoozed;
     if (filter === 'done') return task.completed;
-    if (filter === 'overdue') return isOverdue(task);
+    if (filter === 'overdue') return isOverdue(task) && !snoozed;
     return true;
   });
 
   return (
-    <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
+    <RefreshableScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
       <View style={styles.header}>
         <View>
           <Text style={styles.kicker}>أفكارك تحت السيطرة</Text>
@@ -146,7 +151,7 @@ export function TasksScreen() {
           <PrimaryButton
             title={editing ? 'حفظ التعديل' : 'إضافة المهمة'}
             loading={save.isPending}
-            onPress={() => title.trim() ? save.mutate() : Alert.alert('بيانات ناقصة', 'أدخل عنوان المهمة')}
+            onPress={() => title.trim() ? save.mutate() : showError('بيانات ناقصة', 'أدخل عنوان المهمة')}
           />
           {editing && <Pressable onPress={reset} style={styles.cancel}><Text style={styles.cancelText}>إلغاء</Text></Pressable>}
       </FormSheet>
@@ -159,7 +164,7 @@ export function TasksScreen() {
           </Pressable>
         ))}
       </View>
-      {tasks.map(task => (
+      {query.isError ? <DataError onRetry={() => void query.refetch()} /> : query.isLoading ? <DataLoading /> : tasks.map(task => (
         <View key={task.id} style={[styles.item, task.completed && styles.itemDone]}>
           <Pressable onPress={() => toggle.mutate(task)} style={styles.check}>
             {task.completed ? <Check color={colors.emeraldDark} size={23} /> : <Circle color={colors.inkMuted} size={23} />}
@@ -181,9 +186,9 @@ export function TasksScreen() {
           </View>
         </View>
       ))}
-      {!tasks.length && <View style={styles.empty}><ListChecks color={colors.gold} size={38} /><Text style={styles.emptyTitle}>ماكو مهام بهالفلاتر</Text><Text style={styles.emptyText}>أضف فكرة أو مهمة حتى تبقى محفوظة وتوصلك تذكيراتها.</Text></View>}
+      {!query.isLoading && !query.isError && !tasks.length && <View style={styles.empty}><ListChecks color={colors.gold} size={38} /><Text style={styles.emptyTitle}>ماكو مهام بهالفلاتر</Text><Text style={styles.emptyText}>أضف فكرة أو مهمة حتى تبقى محفوظة وتوصلك تذكيراتها.</Text></View>}
       <ConfirmDialog visible={Boolean(pending)} title="حذف المهمة" message={pending ? 'هل تريد حذف «' + pending.title + '»؟' : ''} confirmLabel="حذف" destructive onCancel={() => setPending(null)} onConfirm={() => pending && remove.mutate(pending.id)} />
-    </ScrollView>
+    </RefreshableScrollView>
   );
 }
 

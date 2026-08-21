@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Alert,
   Modal,
   Pressable,
   ScrollView,
@@ -25,6 +24,10 @@ import { api, Category, Income } from '../api/client';
 import { readToken } from '../auth/storage';
 import { colors, radius, spacing, typography } from '../design/tokens';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { showError } from '../ui/toast';
+import { DataLoading } from '../components/DataLoading';
+import { DataError } from '../components/DataError';
+import { RefreshableScrollView } from '../components/RefreshableScrollView';
 import { Field } from '../components/Field';
 
 export function TransactionsScreen({ navigation }: { navigation: any }) {
@@ -41,6 +44,10 @@ export function TransactionsScreen({ navigation }: { navigation: any }) {
   const [editingCategory, setEditingCategory] = React.useState<Category | null>(
     null,
   );
+  const [page, setPage] = React.useState(1);
+  const [loadedTransactions, setLoadedTransactions] = React.useState<
+    NonNullable<Awaited<ReturnType<typeof api.transactionsFiltered>>['data']>
+  >([]);
   const [selectedIncome, setSelectedIncome] = React.useState<Income | null>(
     null,
   );
@@ -58,13 +65,23 @@ export function TransactionsScreen({ navigation }: { navigation: any }) {
   if (type !== 'all') params.set('type', type);
   if (categoryId) params.set('categoryId', categoryId);
   const query = useQuery({
-    queryKey: ['transactions', search, type, categoryId],
+    queryKey: ['transactions', search, type, categoryId, page],
     queryFn: async () => {
       const token = await readToken();
       if (!token) throw new Error('انتهت الجلسة');
-      return api.transactionsFiltered(token, params.toString());
+      return api.transactionsFiltered(token, params.toString(), page);
     },
   });
+  React.useEffect(() => {
+    const next = query.data?.data ?? [];
+    setLoadedTransactions(current =>
+      page === 1 ? next : [...current, ...next.filter(item => !current.some(existing => existing.id === item.id))],
+    );
+  }, [page, query.data]);
+  React.useEffect(() => {
+    setPage(1);
+    setLoadedTransactions([]);
+  }, [search, type, categoryId]);
   const incomes = useQuery({
     queryKey: ['incomes'],
     queryFn: async () => {
@@ -83,11 +100,7 @@ export function TransactionsScreen({ navigation }: { navigation: any }) {
       void client.invalidateQueries({ queryKey: ['transactions'] });
       void client.invalidateQueries({ queryKey: ['monthly'] });
     },
-    onError: error =>
-      Alert.alert(
-        'تعذر حذف العملية',
-        error instanceof Error ? error.message : 'حاول مرة أخرى',
-      ),
+    onError: error => showError('تعذر حذف العملية', error),
   });
   const saveCategory = useMutation({
     mutationFn: async () => {
@@ -104,11 +117,7 @@ export function TransactionsScreen({ navigation }: { navigation: any }) {
       setEditingCategory(null);
       void client.invalidateQueries({ queryKey: ['categories'] });
     },
-    onError: error =>
-      Alert.alert(
-        'تعذر حفظ التصنيف',
-        error instanceof Error ? error.message : 'حاول مرة أخرى',
-      ),
+    onError: error => showError('تعذر حفظ التصنيف', error),
   });
   const removeCategory = useMutation({
     mutationFn: async (id: string) => {
@@ -120,13 +129,10 @@ export function TransactionsScreen({ navigation }: { navigation: any }) {
       setPendingDelete(null);
       void client.invalidateQueries({ queryKey: ['categories'] });
     },
-    onError: error =>
-      Alert.alert(
-        'تعذر حذف التصنيف',
-        error instanceof Error ? error.message : 'حاول مرة أخرى',
-      ),
+    onError: error => showError('تعذر حذف التصنيف', error),
   });
-  const items = query.data?.data ?? [];
+  const items = loadedTransactions;
+  const canLoadMore = (query.data?.data.length ?? 0) >= 20;
   const visibleIncomes = (incomes.data ?? []).filter(item => {
     if (type === 'expense') return false;
     return !search.trim() || item.type.includes(search.trim());
@@ -155,7 +161,7 @@ export function TransactionsScreen({ navigation }: { navigation: any }) {
     setCategoryName('');
   }
   return (
-    <ScrollView
+    <RefreshableScrollView
       contentContainerStyle={styles.screen}
       keyboardShouldPersistTaps="handled"
     >
@@ -298,7 +304,7 @@ export function TransactionsScreen({ navigation }: { navigation: any }) {
             <Pressable
               onPress={() => {
                 if (categoryName.trim()) saveCategory.mutate();
-                else Alert.alert('بيانات ناقصة', 'أدخل اسم التصنيف');
+                else showError('بيانات ناقصة', 'أدخل اسم التصنيف');
               }}
               style={styles.saveCategory}
               disabled={saveCategory.isPending}
@@ -351,7 +357,13 @@ export function TransactionsScreen({ navigation }: { navigation: any }) {
           {items.length + visibleIncomes.length} عملية
         </Text>
       </View>
-      {visibleIncomes.map(item => (
+      {query.isError || incomes.isError || categories.isError ? (
+        <DataError onRetry={() => {
+          void query.refetch();
+          void incomes.refetch();
+          void categories.refetch();
+        }} />
+      ) : query.isLoading || incomes.isLoading || categories.isLoading ? <DataLoading /> : visibleIncomes.map(item => (
         <Pressable
           key={`income-${item.id}`}
           style={styles.row}
@@ -377,7 +389,7 @@ export function TransactionsScreen({ navigation }: { navigation: any }) {
           </View>
         </Pressable>
       ))}
-      {items.map(item => (
+      {!query.isLoading && !incomes.isLoading && items.map(item => (
         <View key={item.id} style={styles.row}>
           <View
             style={[
@@ -439,7 +451,7 @@ export function TransactionsScreen({ navigation }: { navigation: any }) {
           </View>
         </View>
       ))}
-      {!items.length && !visibleIncomes.length && (
+      {!query.isLoading && !incomes.isLoading && !categories.isLoading && !query.isError && !incomes.isError && !items.length && !visibleIncomes.length && (
         <View style={styles.empty}>
           <Tag color={colors.gold} size={38} />
           <Text style={styles.emptyTitle}>لا توجد عمليات مطابقة</Text>
@@ -447,6 +459,17 @@ export function TransactionsScreen({ navigation }: { navigation: any }) {
             أضف عملية جديدة أو غيّر الفلاتر لتظهر النتائج هنا.
           </Text>
         </View>
+      )}
+      {!query.isLoading && !query.isError && canLoadMore && (
+        <Pressable
+          onPress={() => setPage(current => current + 1)}
+          disabled={query.isFetching}
+          style={styles.loadMore}
+        >
+          <Text style={styles.loadMoreText}>
+            {query.isFetching ? 'جاري تحميل المزيد...' : 'تحميل المزيد'}
+          </Text>
+        </Pressable>
       )}
       <Modal
         visible={Boolean(selectedIncome)}
@@ -506,11 +529,22 @@ export function TransactionsScreen({ navigation }: { navigation: any }) {
           }
         }}
       />
-    </ScrollView>
+    </RefreshableScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  loadMore: {
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    marginTop: spacing.md,
+    minHeight: 48,
+    justifyContent: 'center',
+  },
+  loadMoreText: { ...typography.label, color: colors.emeraldDark, fontWeight: '700' },
   screen: {
     flexGrow: 1,
     backgroundColor: colors.canvas,

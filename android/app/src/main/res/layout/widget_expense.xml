@@ -2,4 +2,5 @@
   <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="مصروفي" android:textColor="#DDF6EC" android:textSize="14sp" android:textStyle="bold" />
   <TextView android:id="@+id/widget_balance" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="0 د.ع" android:textColor="#FFFFFF" android:textSize="24sp" android:textStyle="bold" />
   <TextView android:id="@+id/widget_transactions" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="#B6C9C2" android:textSize="12sp" />
+  <TextView android:id="@+id/widget_updated_at" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:textColor="#B6C9C2" android:textSize="10sp" />
 </LinearLayout>

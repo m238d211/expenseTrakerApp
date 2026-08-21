@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
   NativeModules,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -14,6 +12,10 @@ import { readToken } from '../auth/storage';
 import { colors, radius, spacing, typography } from '../design/tokens';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { QuickAddSheet } from '../components/QuickAddSheet';
+import { DataLoading } from '../components/DataLoading';
+import { DataError } from '../components/DataError';
+import { RefreshableScrollView } from '../components/RefreshableScrollView';
+import { showError } from '../ui/toast';
 export function HomeScreen({
   navigation,
 }: {
@@ -73,11 +75,7 @@ export function HomeScreen({
       await queryClient.invalidateQueries({ queryKey: ['transactions'] });
       await queryClient.invalidateQueries({ queryKey: ['monthly'] });
     },
-    onError: error =>
-      Alert.alert(
-        'تعذر حذف العملية',
-        error instanceof Error ? error.message : 'حاول مرة أخرى',
-      ),
+    onError: error => showError('تعذر حذف العملية', error),
   });
   
   function openDeleteDialog(id: string, description: string) {
@@ -97,10 +95,11 @@ export function HomeScreen({
             item =>
               `${item.description}: ${item.amount.toLocaleString('en-US')} د.ع`,
           ),
+        new Date().toISOString(),
       );
   }, [data, transactions.data]);
   return (
-    <ScrollView contentContainerStyle={styles.screen}>
+    <RefreshableScrollView contentContainerStyle={styles.screen}>
       {telegramStatus.data && !telegramStatus.data.linked && (
         <View style={styles.telegramBanner}>
           <View style={styles.bannerCopy}>
@@ -181,7 +180,14 @@ export function HomeScreen({
         </Pressable>
       </View>
       <Text style={styles.sectionTitle}>آخر العمليات</Text>
-      {transactions.data?.data.length ? (
+      {summary.isError || transactions.isError ? (
+        <DataError onRetry={() => {
+          void summary.refetch();
+          void transactions.refetch();
+        }} />
+      ) : summary.isLoading || transactions.isLoading ? (
+        <DataLoading />
+      ) : transactions.data?.data.length ? (
         transactions.data.data.slice(0, 8).map(item => (
           <View key={item.id} style={styles.row}>
             <View>
@@ -244,7 +250,7 @@ export function HomeScreen({
           navigation.navigate('AddIncome');
         }}
       />
-    </ScrollView>
+    </RefreshableScrollView>
   );
 }
 const styles = StyleSheet.create({
