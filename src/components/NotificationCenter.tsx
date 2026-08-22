@@ -34,8 +34,10 @@ function NotificationRow({ notification }: { notification: AppNotification }) {
   const translateX = useRef(new Animated.Value(0)).current;
   const panResponder = useRef(
     PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: (_, gesture) =>
         Math.abs(gesture.dx) > 8 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
+      onPanResponderGrant: () => translateX.setValue(0),
       onPanResponderTerminationRequest: () => false,
       onShouldBlockNativeResponder: () => true,
       onPanResponderMove: (_, gesture) => translateX.setValue(gesture.dx),
@@ -54,9 +56,16 @@ function NotificationRow({ notification }: { notification: AppNotification }) {
       }).start();
       return;
     }
-    removeNotification(notification.id);
-    void readToken().then(token => {
-      if (token) void api.deleteNotification(token, notification.id).catch(() => undefined);
+    Animated.timing(translateX, {
+      toValue: distance > 0 ? 500 : -500,
+      duration: 180,
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (!finished) return;
+      removeNotification(notification.id);
+      void readToken().then(token => {
+        if (token) void api.deleteNotification(token, notification.id).catch(() => undefined);
+      });
     });
   }
 
