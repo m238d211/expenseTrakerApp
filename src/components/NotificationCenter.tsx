@@ -33,23 +33,26 @@ function NotificationRow({ notification }: { notification: AppNotification }) {
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, gesture) =>
         Math.abs(gesture.dx) > 8 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
+      onPanResponderTerminationRequest: () => false,
+      onShouldBlockNativeResponder: () => true,
       onPanResponderMove: (_, gesture) => translateX.setValue(gesture.dx),
       onPanResponderRelease: (_, gesture) => {
-        if (Math.abs(gesture.dx) < SWIPE_THRESHOLD) {
-          Animated.spring(translateX, {
-            toValue: 0,
-            useNativeDriver: true,
-          }).start();
-          return;
-        }
-        Animated.timing(translateX, {
-          toValue: gesture.dx > 0 ? 400 : -400,
-          duration: 180,
-          useNativeDriver: true,
-        }).start(() => removeNotification(notification.id));
+        handleSwipeRelease(gesture.dx);
       },
+      onPanResponderTerminate: (_, gesture) => handleSwipeRelease(gesture.dx),
     }),
   ).current;
+
+  function handleSwipeRelease(distance: number) {
+    if (Math.abs(distance) < SWIPE_THRESHOLD) {
+      Animated.spring(translateX, {
+        toValue: 0,
+        useNativeDriver: true,
+      }).start();
+      return;
+    }
+    removeNotification(notification.id);
+  }
 
   return (
     <View style={styles.rowFrame}>
