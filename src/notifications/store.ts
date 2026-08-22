@@ -5,6 +5,7 @@ export type AppNotification = {
   title: string;
   body: string;
   receivedAt: string;
+  readAt: string | null;
 };
 
 let notifications: AppNotification[] = [];
@@ -15,16 +16,37 @@ function notifyListeners() {
 }
 
 export function addNotification(
-  notification: Omit<AppNotification, 'id' | 'receivedAt'>,
+  notification: Pick<AppNotification, 'title' | 'body'> &
+    Partial<Pick<AppNotification, 'id' | 'receivedAt' | 'readAt'>>,
 ) {
+  const id = notification.id ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  if (notifications.some(item => item.id === id)) return;
   notifications = [
     {
-      ...notification,
-      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-      receivedAt: new Date().toISOString(),
+      title: notification.title,
+      body: notification.body,
+      id,
+      receivedAt: notification.receivedAt ?? new Date().toISOString(),
+      readAt: notification.readAt ?? null,
     },
     ...notifications,
   ];
+  notifyListeners();
+}
+
+export function hydrateNotifications(serverNotifications: AppNotification[]) {
+  const serverIds = new Set(serverNotifications.map(notification => notification.id));
+  const localOnly = notifications.filter(notification => !serverIds.has(notification.id));
+  notifications = [...serverNotifications, ...localOnly].sort(
+    (a, b) => new Date(b.receivedAt).getTime() - new Date(a.receivedAt).getTime(),
+  );
+  notifyListeners();
+}
+
+export function markNotificationRead(id: string, readAt = new Date().toISOString()) {
+  notifications = notifications.map(notification =>
+    notification.id === id ? { ...notification, readAt } : notification,
+  );
   notifyListeners();
 }
 

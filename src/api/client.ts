@@ -83,6 +83,13 @@ export type Task = {
   createdAt: string;
   updatedAt: string;
 };
+export type ApiNotification = {
+  id: string;
+  title: string;
+  body: string;
+  readAt: string | null;
+  createdAt: string;
+};
 export type TelegramLinkResponse = {
   token: string;
   link: string;
@@ -391,6 +398,12 @@ export const api = {
       { method: 'DELETE', body: JSON.stringify({ token: deviceToken }) },
       token,
     ),
+  notifications: (token: string) =>
+    request<ApiNotification[]>('/notifications', {}, token),
+  markNotificationRead: (token: string, id: string) =>
+    request<ApiNotification>(`/notifications/${id}/read`, { method: 'PATCH' }, token),
+  deleteNotification: (token: string, id: string) =>
+    request<{ deleted: boolean }>(`/notifications/${id}`, { method: 'DELETE' }, token),
   createTelegramLink: (token: string) =>
     request<TelegramLinkResponse>(
       '/telegram/link-token',

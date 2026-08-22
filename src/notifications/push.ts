@@ -1,16 +1,34 @@
 import { Platform } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
 import { api } from '../api/client';
-import { addNotification } from './store';
+import { addNotification, hydrateNotifications } from './store';
 
 function saveMessage(message: {
   notification?: { title?: string; body?: string };
-  data?: { title?: string; body?: string };
+  data?: { title?: string; body?: string; notificationId?: string };
 }) {
   addNotification({
+    id: message.data?.notificationId,
     title: message.notification?.title ?? message.data?.title ?? 'مصروفي',
     body: message.notification?.body ?? message.data?.body ?? 'لديك إشعار جديد',
   });
+}
+
+export async function loadSavedNotifications(accessToken: string) {
+  try {
+    const saved = await api.notifications(accessToken);
+    hydrateNotifications(
+      saved.map(notification => ({
+        id: notification.id,
+        title: notification.title,
+        body: notification.body,
+        receivedAt: notification.createdAt,
+        readAt: notification.readAt,
+      })),
+    );
+  } catch {
+    // Live FCM notifications remain available when the history request is offline.
+  }
 }
 
 export async function registerForPushNotifications(accessToken: string) {

@@ -15,7 +15,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { clearToken, readToken } from './src/auth/storage';
 import { ApiError, api } from './src/api/client';
-import { registerForPushNotifications } from './src/notifications/push';
+import { loadSavedNotifications, registerForPushNotifications } from './src/notifications/push';
+import { clearNotifications } from './src/notifications/store';
 import { colors } from './src/design/tokens';
 
 const queryClient = new QueryClient({
@@ -51,10 +52,17 @@ function App() {
       .finally(() => setReady(true));
   }, []);
   useEffect(() => {
+    if (!authenticated) {
+      clearNotifications();
+      return;
+    }
+  }, [authenticated]);
+  useEffect(() => {
     if (!authenticated) return;
     let unsubscribe: (() => void) | undefined;
     readToken().then(token => {
       if (!token) return;
+      void loadSavedNotifications(token);
       registerForPushNotifications(token)
         .then(cleanup => {
           unsubscribe = cleanup;

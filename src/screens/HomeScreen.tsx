@@ -136,10 +136,12 @@ export function HomeScreen({
             style={styles.headerButton}
           >
             <Bell color={colors.ink} size={21} />
-            {notifications.length > 0 && (
+            {notifications.some(notification => !notification.readAt) && (
               <View style={styles.notificationBadge}>
                 <Text style={styles.notificationBadgeText}>
-                  {notifications.length > 1 ? '1+' : notifications.length}
+                  {notifications.filter(notification => !notification.readAt).length > 1
+                    ? '1+'
+                    : notifications.filter(notification => !notification.readAt).length}
                 </Text>
               </View>
             )}

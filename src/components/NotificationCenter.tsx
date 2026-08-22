@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Animated,
   Modal,
@@ -10,8 +10,11 @@ import {
 } from 'react-native';
 import { Bell, Trash2, X } from 'lucide-react-native';
 import { colors, radius, spacing, typography } from '../design/tokens';
+import { api } from '../api/client';
+import { readToken } from '../auth/storage';
 import {
   AppNotification,
+  markNotificationRead,
   removeNotification,
   useNotifications,
 } from '../notifications/store';
@@ -52,6 +55,9 @@ function NotificationRow({ notification }: { notification: AppNotification }) {
       return;
     }
     removeNotification(notification.id);
+    void readToken().then(token => {
+      if (token) void api.deleteNotification(token, notification.id).catch(() => undefined);
+    });
   }
 
   return (
@@ -87,6 +93,31 @@ export function NotificationCenter({
   onClose: () => void;
 }) {
   const notifications = useNotifications();
+
+  useEffect(() => {
+    if (!visible) return;
+    const persistedNotifications = notifications.filter(
+      notification =>
+        !notification.readAt &&
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+          notification.id,
+        ),
+    );
+    if (!persistedNotifications.length) return;
+    void readToken().then(token => {
+      if (!token) return;
+      void Promise.all(
+        persistedNotifications.map(async notification => {
+          try {
+            const updated = await api.markNotificationRead(token, notification.id);
+            markNotificationRead(notification.id, updated.readAt ?? new Date().toISOString());
+          } catch {
+            // The notification remains unread locally if the server update fails.
+          }
+        }),
+      );
+    });
+  }, [notifications, visible]);
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
