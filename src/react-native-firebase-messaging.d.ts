@@ -4,6 +4,8 @@ declare module '@react-native-firebase/messaging' {
     getToken: () => Promise<string>;
     onTokenRefresh: (listener: (token: string) => void) => () => void;
     onMessage: (listener: (message: { notification?: { title?: string; body?: string } }) => void) => () => void;
+    onNotificationOpenedApp: (listener: (message: { notification?: { title?: string; body?: string } }) => void) => () => void;
+    getInitialNotification: () => Promise<{ notification?: { title?: string; body?: string } } | null>;
   };
   const messaging: (() => Messaging) & { AuthorizationStatus: { AUTHORIZED: number; PROVISIONAL: number } };
   export default messaging;

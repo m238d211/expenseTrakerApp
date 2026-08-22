@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Bell } from 'lucide-react-native';
 import { api } from '../api/client';
 import { readToken } from '../auth/storage';
 import { colors, radius, spacing, typography } from '../design/tokens';
@@ -16,6 +17,8 @@ import { DataLoading } from '../components/DataLoading';
 import { DataError } from '../components/DataError';
 import { RefreshableScrollView } from '../components/RefreshableScrollView';
 import { showError } from '../ui/toast';
+import { NotificationCenter } from '../components/NotificationCenter';
+import { useNotifications } from '../notifications/store';
 export function HomeScreen({
   navigation,
 }: {
@@ -65,6 +68,8 @@ export function HomeScreen({
     description: string;
   } | null>(null);
   const [quickAddVisible, setQuickAddVisible] = useState(false);
+  const [notificationsVisible, setNotificationsVisible] = useState(false);
+  const notifications = useNotifications();
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const token = await readToken();
@@ -123,14 +128,31 @@ export function HomeScreen({
             مرحبا {profile.data?.name || 'بك'}👋
           </Text>
         </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="الإعدادات"
-          onPress={() => navigation.navigate('Settings')}
-          style={styles.settings}
-        >
-          <Text style={styles.settingsText}>⚙</Text>
-        </Pressable>
+        <View style={styles.headerActions}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="الإشعارات"
+            onPress={() => setNotificationsVisible(true)}
+            style={styles.headerButton}
+          >
+            <Bell color={colors.ink} size={21} />
+            {notifications.length > 0 && (
+              <View style={styles.notificationBadge}>
+                <Text style={styles.notificationBadgeText}>
+                  {notifications.length > 1 ? '1+' : notifications.length}
+                </Text>
+              </View>
+            )}
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="الإعدادات"
+            onPress={() => navigation.navigate('Settings')}
+            style={styles.headerButton}
+          >
+            <Text style={styles.settingsText}>⚙</Text>
+          </Pressable>
+        </View>
       </View>
       <View style={styles.balance}>
         <Text style={styles.balanceLabel}>الرصيد الحالي</Text>
@@ -250,6 +272,10 @@ export function HomeScreen({
           navigation.navigate('AddIncome');
         }}
       />
+      <NotificationCenter
+        visible={notificationsVisible}
+        onClose={() => setNotificationsVisible(false)}
+      />
     </RefreshableScrollView>
   );
 }
@@ -276,7 +302,11 @@ const styles = StyleSheet.create({
   },
   eyebrow: { ...typography.label, color: colors.emerald },
   title: { ...typography.heading, color: colors.ink, marginTop: spacing.xs },
-  settings: {
+  headerActions: {
+    flexDirection: 'row-reverse',
+    gap: spacing.sm,
+  },
+  headerButton: {
     width: 46,
     height: 46,
     borderRadius: radius.pill,
@@ -285,6 +315,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    minWidth: 18,
+    height: 18,
+    borderRadius: radius.pill,
+    backgroundColor: colors.danger,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 3,
+  },
+  notificationBadgeText: {
+    color: colors.white,
+    fontSize: 10,
+    lineHeight: 13,
+    fontWeight: '800',
   },
   settingsText: { fontSize: 22, color: colors.ink },
   telegramBanner: {

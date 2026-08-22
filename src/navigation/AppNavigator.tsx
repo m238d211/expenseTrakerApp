@@ -40,6 +40,7 @@ function MainTabs() {
   });
   return (
     <Tabs.Navigator
+      initialRouteName="Home"
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.emeraldDark,
